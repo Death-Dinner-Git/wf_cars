@@ -1,0 +1,96 @@
+<script type="text/javascript" src="__JS__/Validform_v5.3.2.js"></script>
+<script type="text/javascript">
+    var alertMessage = function (msg,icon,type,shift,time,shade) {
+        msg = msg || '提示信息缺失';
+        icon = icon || 0;
+        type = type || 0;
+        shift = shift || 3;
+        time = time || 1000;
+        shade = shade || 0.372;
+        var config = {icon: icon,type: type,shift: shift,time:time,shade:shade};
+        layui.use(['layer'],function () {
+            layer.msg(msg,config);
+        });
+    };
+	$(function(){
+		$("#driverAdd").Validform({
+			ajaxPost:true,
+			tiptype:alertMessage,
+			callback:function(data){
+				if(data.code==200){
+					alertMessage(data.message,6,'',6);
+					window.location.href=data.data;
+				}else{
+					alertMessage(data.message,5,'',6);
+				}
+			}
+		});
+	})
+</script>
+<section id="content-container">
+    <div id="content-body" style="margin:auto;">
+        <form id="driverAdd" class="layui-form layui-form-pane" method="post" action="{:url('add')}">
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">司机姓名:</label>
+                <div class="layui-input-inline">
+					 <input class="layui-input" name="username" type="text" datatype="*" nullmsg="请填写司机姓名" errormsg="司机姓名不正确"/>
+                </div>
+            </div>
+	
+            <div class="layui-form-item">
+                <label class="layui-form-label">手机号码:</label>
+                <div class="layui-input-inline">
+					<input class="layui-input" name="phone"  type="text" datatype="m" nullmsg="请填写手机号" errormsg="手机号码不正确">
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">城市:</label>
+                <div class="layui-input-inline">
+                    <select name="cityid"  id="cityId" lay-filter="car">
+                        <option value="">请选择城市</option>
+						{volist name="city" id="vo"}
+						<option value="{$vo.id}" >{$vo.name}</option>
+						{/volist}
+                    </select>
+                </div>
+            </div>
+
+			  <div class="layui-form-item">
+				<label class="layui-form-label">驾照类型</label>
+				<div class="layui-input-block">
+				  <input  value="CONE" name="drivingLicense" title="C1" type="radio">
+				  <input  value="CTWO" name="drivingLicense" title="C2" type="radio">
+				  <input  value="BONE" name="drivingLicense" title="B1" type="radio">
+				  <input  value="BTWO" name="drivingLicense" title="B2" type="radio">
+				  
+				</div>
+			  </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">密码:</label>
+                <div class="layui-input-inline">
+					<input class="layui-input" name="password"  type="password" datatype="*" nullmsg="请填写密码" errormsg="密码类型错误">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">确认密码:</label>
+                <div class="layui-input-inline">
+					<input class="layui-input" name="password_confirm"  type="password" recheck="password" datatype="*" nullmsg="请填写确认密码" errormsg="密码类型错误" >
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="text-align: center;">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit="" lay-filter="submit">保存</button>
+                </div>
+            </div>
+
+			<div class="layui-form-item" style="display:block;height:50px;"></div>
+        </form>
+
+    </div>
+</section>

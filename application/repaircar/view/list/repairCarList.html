@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>表格</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="_SHORTCUT_" type="image/x-icon">
+
+    <!-- load css -->
+    <link rel="stylesheet" type="text/css" href="_LAYUI_/css/layui.css" media="all">
+    <link rel="stylesheet" type="text/css" href="__CSS__/layout.css" media="all">
+    <link rel="stylesheet" type="text/css" href="__CSS__/iconfont.css" media="all">
+
+    <!-- For site js -->
+    <script type="text/javascript" src="__JS__/jquery.js"></script>
+    <script type="text/javascript" src="__JS__/bootstrap.js"></script>
+    <script type="text/javascript" src="_LAYUI_/layui.js"></script>
+    <title>{$meta_title ? $meta_title.' - ' : ''}_TITLE_</title>
+
+</head>
+<body>
+
+<form class="layui-form layui-form-pane" action="{:url('list')}" method="get">
+    <div class="layui-form-item">
+
+        <label class="layui-form-label">车辆名称:</label>
+        <div class="layui-input-inline">
+            <input type="text" value="{$number_plate}" name="numberPlate" placeholder="车辆名称" class="layui-input">
+        </div>
+
+        <label class="layui-form-label">城市</label>
+        <div class="layui-input-inline">
+            <select name="cityId" lay-search>
+                <option value="">请选择城市</option>
+                {volist name='cityListData' id='cityList' key='key'}
+                <option value="{$cityList.id}" {eq name="$cityList.id" value="$city_id"}selected{/eq}>{$cityList.name}</option>
+                {/volist}
+            </select>
+        </div>
+
+        <label class="layui-form-label">开始日期:</label>
+        <div class="layui-input-inline">
+            <input name="create_time_start" value="{$start_time}" class="layui-input" placeholder="开始日期" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm'})">
+        </div>
+
+        <label class="layui-form-label">结束日期:</label>
+        <div class="layui-input-inline">
+            <input name="create_time_end" value="{$end_time}" class="layui-input" placeholder="结束日期" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm'})">
+        </div>
+
+        <button class="layui-btn" lay-submit="">查询</button>
+
+        <a href="javascript:void(0);" onclick="showUrl('编辑','add','70%','80%','2')"><label class="layui-btn">添加</label></a>
+        <!--<a href="javascript:void(0);"><button onclick="showUrl('编辑','add','70%','80%','2')" class="layui-btn layui-btn-mini"><i class="fa fa-search"></i>添加</button></a>-->
+
+    </div>
+</form>
+
+<table class="layui-table" lay-even="" lay-skin="row">
+    <thead>
+    <tr>
+        <th style="width:50px; text-align: center">序号</th>
+        <th>区域</th>
+        <th>车牌号</th>
+        <th>维护时间</th>
+        <th>维护内容</th>
+        <th>维护费用</th>
+        <th>维护类型</th>
+        <th>维护项目</th>
+        <th>维修店</th>
+        <th>办理人</th>
+        <th style="width:50px; text-align: center">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {volist name="repairCarData" id="vo" key="key"}
+    <tr data-key="{$key}">
+        <td style="width: 45px;text-align: center;">
+            {$key}
+        </td>
+        <td>{$vo.cityName}</td>
+        <td style="width: 100px;">{$vo.number_plate}</td>
+        <td style="width: 150px;">
+            <div>{:date_format(date_create($vo.start_time),'Y-m-d H:i')}</div>至
+            <div>{:date_format(date_create($vo.end_time),'Y-m-d H:i')}</div>
+        </td>
+        <td>{$vo.reason}</td>
+        <td>{$vo.fee}</td>
+        <td>
+            {$vo.repairType}
+        </td>
+        <td>{$vo.project}</td>
+        <td>{$vo.shop_name}</td>
+        <td>{$vo.real_name}</td>
+        <td style="width: 150px;text-align: center;">
+            <a href="javascript:void(0);"><button onclick="showUrl('编辑','detail?id={$vo.id}','70%','80%','2')" class="layui-btn layui-btn-mini"><i class="fa fa-search"></i>编辑</button></a>
+            <a href="javascript:void(0);"><button  class="layui-btn layui-btn-mini" onclick="deleter({$vo.id})" ><i class="fa fa-search"></i>删除</button></a>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+<div id="paging_0124" style="text-align:right;" data-pages="{$count}"></div>
+<script type="text/javascript" src="__JS__/site.js"></script>
+<script>
+    layui.use([ 'laydate', 'form'], function() {});
+</script>
+<script>
+    $(function() {
+        layui.use(['laypage', 'layer'], function(){
+            var laypage = layui.laypage,
+                element = 'paging_0124',
+                currPage = $.getUrlParam('pageNumber'),
+                count = $('#'+element).attr('data-pages');
+            currPage = currPage > 1 ? currPage : 1;
+            count = count ? count : 0;
+            laypage({
+                curr:currPage,
+                cont: element,
+                pages: count,
+                skip: true,
+                jump: function(obj,first){
+                    if(obj.curr != currPage) {
+                        var url = location.href;
+                        if(url.indexOf("?") == -1) {
+                            location.href = url+"?pageNumber="+obj.curr;
+                        }else {
+                            var page = $.getUrlParam('pageNumber');
+                            if(page) {
+                                location.href = url.replace("pageNumber="+page,"pageNumber="+obj.curr);
+                            }
+                            else {
+                                location.href = url.replace("?","?pageNumber="+obj.curr+"&");
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    });
+    //删除
+    function deleter(id){
+        alert(id);
+    }
+</script>
+
+</body></html>

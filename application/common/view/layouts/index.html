@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="author" content="">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="url" content="">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="_SHORTCUT_" type="image/x-icon">
+
+    <!-- For site css -->
+
+    <script type="text/javascript" src="__JS__/jquery.js"></script>
+    <script type="text/javascript" src="__JS__/bootstrap.js"></script>
+    <script type="text/javascript" src="_LAYUI_/layui.js"></script>
+
+    <!-- Fake Loader start -->
+    <link rel="stylesheet" href="_PLUGINS_/fakeloader/css/fakeloader.css">
+    <script src="_PLUGINS_/fakeloader/js/fakeloader.js"></script>
+    <script>
+        var _spinner2 = {
+            timeToHide:1200,
+            bgColor:"#1abc9c",
+            spinner:"spinner2",
+            zIndex:'20170407',
+            loadCss:{
+                top:'46%',
+                left:'50%'
+            }
+        };
+        $(document).ready(function(){
+            $(".fakeloader").fakeLoader(_spinner2);
+        });
+    </script>
+    <!-- Fake Loader end -->
+
+    <!-- load css -->
+    <link rel="stylesheet" type="text/css" href="_LAYUI_/css/layui.css" media="all">
+    <link rel="stylesheet" type="text/css" href="__CSS__/layout.css" media="all">
+    <link rel="stylesheet" type="text/css" href="__CSS__/iconfont.css" media="all">
+
+    <title>{$meta_title ? $meta_title.' - ' : ''}_TITLE_</title>
+
+</head>
+<body>
+
+<div class="wrap">
+
+    <div class="container"  id="container">
+
+        <div class="layui-layout layui-layout-back" id="layui_layout">
+
+            <!-- 顶部区域开启 -->
+            {include file="common@layouts/header" /}
+            <!-- 顶级区域结束 -->
+
+            <!-- 左侧侧边导航开始 -->
+            {include file="common@layouts/sidebar" /}
+            <!-- 左侧侧边导航结束 -->
+
+            <!-- 右侧主体内容开启 -->
+            <div class="layui-body" id="dinner-body" style="bottom: 0;border-left: solid 2px #1AA094;">
+                <div class="layui-tab layui-tab-card dinner-tab-box" id="dinner-tab" lay-filter="switch-tab" lay-allowclose="true" lay-separator=" | ">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this"  id="dinner-home">
+                            <i class="fa fa-dashboard" aria-hidden="true"></i>
+                            <cite>控制面板</cite>
+                        </li>
+                    </ul>
+                    <div class="layui-tab-content" style="min-height: 800px; ">
+                        <div class="layui-tab-item layui-show">
+                            <iframe class="dinner-iframe" data-id='0' frameborder="0" scrolling="no" src=""></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 右侧主体内容结束 -->
+
+            <!-- 底部区域开启 -->
+            {include file="common@layouts/footer" /}
+            <!-- 底部区域结束 -->
+
+            <!-- 其他区域开启 -->
+            <div class="site-tree-mobile layui-hide">
+                <i class="layui-icon">&#xe602;</i>
+            </div>
+            <div class="site-mobile-shade"></div>
+            <!-- 其他区域结束 -->
+
+        </div>
+    </div>
+
+</div>
+
+<!-- fakeLoader start -->
+<div class="fakeloader"></div>
+<!-- fakeLoader end -->
+
+<!--锁屏模板 start-->
+<!--<script type="text/template" id="lock-temp">-->
+    <!--<div class="dinner-header-lock" id="lock-box">-->
+        <!--<div class="dinner-header-lock-img">-->
+            <!--<img src="/static/images/default-user.png"/>-->
+        <!--</div>-->
+        <!--<div class="dinner-header-lock-name" id="lockUserName">Dinner</div>-->
+        <!--<input type="text" class="dinner-header-lock-input" value="输入密码解锁.." name="lockPwd" id="lockPwd" />-->
+        <!--<button class="layui-btn layui-btn-small" id="unlock">解锁</button>-->
+    <!--</div>-->
+<!--</script>-->
+<!--锁屏模板 end -->
+
+<!-- 菜单控件 -->
+<!-- <div class="dinner-tab-menu">
+	<span class="layui-btn dinner-test">刷新</span>
+</div> -->
+
+<!-- iframe框架刷新操作 -->
+<!-- <div id="refresh_iframe" class="layui-btn refresh_iframe">刷新</div> -->
+
+<!-- 加载js文件-->
+<!-- 侧栏菜单 -->
+<script type="text/javascript" src="__JS__/navbar.js"></script>
+<!-- 重定义layui 的tab -->
+<script type="text/javascript" src="__JS__/tab.js"></script>
+<!--  布局控制 -->
+<script type="text/javascript" src="__JS__/layout.js"></script>
+<!--  全局 -->
+<script type="text/javascript" src="__JS__/site.js"></script>
+<script>
+    layui.use('layer', function() {
+        var $ = layui.jquery,
+            layer = layui.layer;
+    });
+</script>
+
+</body>
+</html>
+

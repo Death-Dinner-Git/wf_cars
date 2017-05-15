@@ -1,0 +1,182 @@
+<form class="layui-form layui-form-pane" action="{:url('list')}">
+    <div class="layui-form-item">
+        <label class="layui-form-label">车牌号:</label>
+        <div class="layui-input-inline">
+            <input type="text" name="numberPlate" value="{$front.numberPlate}" class="layui-input">
+        </div>
+        <label class="layui-form-label">置业顾问:</label>
+        <div class="layui-input-inline">
+            <input type="text" name="managerName" value="{$front.managerName}" class="layui-input">
+        </div>
+        <label class="layui-form-label" lay-search>司机</label>
+        <div class="layui-input-inline">
+            <select name="driverId">
+                <option value="">请选择司机</option>
+				{volist name="driver" id="vo"}
+                 <option value="{$vo.id}" {eq name="vo.id" value="$front.driverId"}selected{/eq} >{$vo.real_name}</option>
+				{/volist}
+            </select>
+        </div>
+        <label class="layui-form-label">部门</label>
+        <div class="layui-input-inline">
+            <select name="departmentid" lay-search>
+                <option value="">请选择部门</option>
+				{volist name="department" id="vo"}
+					<option value="{$vo.id}" {eq name="vo.id" value="$front.departmentid"}selected{/eq} >{$vo.name}</option>
+				{/volist}
+            </select>
+        </div>
+        <label class="layui-form-label" lay-search>状态</label>
+        <div class="layui-input-inline">
+            <select name="orderstatus">
+                <option value="">请选择状态</option>
+				 <option value="ordered" {eq name="$front.orderstatus" value="ordered"}selected{/eq}>抢单中</option>
+				 <option value="success" {eq name="$front.orderstatus" value="success"}selected{/eq}>成功匹配</option>
+				 <option value="drivering" {eq name="$front.orderstatus" value="drivering"}selected{/eq}>订单进行中</option>
+				 <option value="over" {eq name="$front.orderstatus" value="over"}selected{/eq}>订单完成</option>
+				 <option value="cancel" {eq name="$front.orderstatus" value="cancel"}selected{/eq}>行程取消</option>
+            </select>
+        </div>
+        <label class="layui-form-label" lay-search>出车类型</label>
+        <div class="layui-input-inline">
+            <select name="ordertype">
+				 <option value="">请选择状态</option>
+				 <option value="come" {eq name="$front.ordertype" value="come"}selected{/eq}>去程</option>
+				 <option value="back" {eq name="$front.ordertype" value="back"}selected{/eq}>返程</option>
+            </select>
+        </div>
+        <label class="layui-form-label">开始日期:</label>
+          <div class="layui-input-inline">
+               <input name="create_time_start" value="{$front.create_time_start}" class="layui-input" placeholder="开始日期" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+          </div>
+        <label class="layui-form-label">结束日期:</label>
+          <div class="layui-input-inline">
+               <input name="create_time_end" value="{$front.create_time_end}" class="layui-input" placeholder="结束日期" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+          </div>
+
+       <div class="layui-input-inline">
+           <input type="submit" class="layui-btn" value="搜索"/>
+       </div>
+
+    </div>
+</form>
+
+<table class="layui-table" lay-skin="row" lay-even="">
+    <thead>
+    <tr>
+        <th>订单编号</th>
+        <th>类型</th>
+        <th>部门办事处/置业顾问</th>
+        <th>预看楼盘</th>
+        <th>人数</th>
+        <th>路程距离</th>
+        <th>订单日期</th>
+        <th>状态</th>
+        <th>是否还车</th>
+        <th style="width:50px; text-align: center">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+	{volist name="TakeCarOrderList" id="vo" key="key" empty="暂时没有数据"}
+			<tr data-key="{$key}">
+				<td style="width: 100px;">
+					{$vo.order_num}
+				</td>
+				<td style="width: 100px;">
+					{$vo.order_type_cn}
+				</td>
+				<td style="width: 150px;">
+					部门：{$vo.dep_name}<br/>
+					业务员：{$vo.mang_name}
+				</td>
+				<td style="width: 100px;">
+					{$vo.build_name}
+				</td>
+				<td style="width: 100px;">
+					{$vo.customerNum}
+				</td>
+				<td style="width: 100px;">
+					{$vo.driver_mileage}
+				</td>
+				<td style="width: 100px;">
+					{$vo.start_time}
+				</td>
+				<td style="width: 100px;">
+					{$vo.order_status_cn}
+				</td>
+				<td style="width: 100px;">
+					{$vo.order_type_cn}
+				</td>
+				<td style="width: 100px;text-align:center;">
+
+					{eq name="vo.order_status" value="drivering"}
+						<a href="javascript:void(0);">
+						  <a  href="{:url('Showrecord',array('id'=>$vo['id']))}?iframe=true" class="layui-btn layui-btn-mini">
+						   <i class="fa fa-search"></i>查看实时记录
+						 </a>
+						</a>
+					{/eq}
+					{eq name="vo.order_status" value="success"}
+						<a href="javascript:void(0);">
+						  <a  href="{:url('Showrecord',array('id'=>$vo['id']))}?iframe=true" class="layui-btn layui-btn-mini">
+						   <i class="fa fa-search"></i>查看实时记录
+						 </a>
+						</a>
+					{/eq}
+					{eq name="vo.order_status" value="over"}
+						<a href="javascript:void(0);">
+						  <a  href="{:url('Showrecord',array('id'=>$vo['id']))}?iframe=true" class="layui-btn layui-btn-mini">
+						   <i class="fa fa-search"></i>查看行驶记录
+						 </a>
+						</a>
+					{/eq}
+
+
+				</td>
+			</tr>
+	{/volist}
+    </tbody>
+</table>
+
+<!-- 分页容器 主要是传递总数 -->
+<div id="paging_0124" style="text-align:right;" data-pages="{$count}"></div>
+
+<script>
+    layui.use([ 'laydate', 'form'], function() {});
+</script>
+<!-- 分页JavaScript代码 主要是传递总数 -->
+<script>
+    $(function() {
+        layui.use(['laypage', 'layer'], function(){
+            var laypage = layui.laypage,
+                element = 'paging_0124',
+                currPage = $.getUrlParam('pageNumber'),
+                count = $('#'+element).attr('data-pages');
+				currPage = currPage > 1 ? currPage : 1;
+				count = count ? count : 0;
+            laypage({
+                curr:currPage,
+                cont: element,
+                pages: count,
+                skip: true,
+                jump: function(obj,first){
+                    if(obj.curr != currPage) {
+                        var url = location.href;
+                        if(url.indexOf("?") == -1) {
+                            location.href = url+"?pageNumber="+obj.curr;
+                        }else {
+                            var page = $.getUrlParam('pageNumber');
+                            if(page) {
+                                location.href = url.replace("pageNumber="+page,"pageNumber="+obj.curr);
+                            }
+                            else {
+                                location.href = url.replace("?","?pageNumber="+obj.curr+"&");
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    });
+</script>
+

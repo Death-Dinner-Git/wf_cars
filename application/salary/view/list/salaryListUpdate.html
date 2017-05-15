@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>表格</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+</head>
+<body>
+
+<section id="content-container" style="display:flex; padding-top: 15px;">
+    <div id="content-body" style="margin:auto;width: 800px;height: 600px;">
+
+        <form class="layui-form layui-form-pane" action="{:url('detail')}" method="post">
+            <div class="layui-form-item">
+
+                <label class="layui-form-label">车辆</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="{$salaryList.number_plate}" name="number_plate"  class="layui-input" readonly="readonly" style="background:#CCCCCC">
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+
+                <label class="layui-form-label">城市</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="{$salaryList.city_name}" name="city_name"  class="layui-input" readonly="readonly" style="background:#CCCCCC">
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+
+                <label class="layui-form-label">置业顾问</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="{$salaryList.real_name}" name="real_name"  class="layui-input" readonly="readonly" style="background:#CCCCCC">
+                </div>
+
+            </div>
+            <div class="layui-form-item">
+
+                <label class="layui-form-label">行驶距离</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="{$salaryList.driver_mileage}" name="driver_mileage" class="layui-input" readonly="readonly" style="background:#CCCCCC">
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+
+                <label class="layui-form-label">行驶时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="{$salaryList.driverTime}" name="sign_mileage"  class="layui-input" readonly="readonly" style="background:#CCCCCC">
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+
+                <label class="layui-form-label">其他费用</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="{$salaryList.other_money}" name="other_money" id="other_money" class="layui-input"  lay-filter="order_money">
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+
+                <label class="layui-form-label">订单费用</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="{$salaryList.order_money}" name="order_money" id="order_money" class="layui-input" readonly="readonly" style="background:#CCCCCC">
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+
+                <label class="layui-form-label">总费用</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="{$salaryList.sum_money}" name="sum_money"  id="sum_money" class="layui-input" readonly="readonly" style="background:#CCCCCC">
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+
+                <label class="layui-form-label">备注</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="{$salaryList.remark}" name="remark"  class="layui-input">
+                </div>
+
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit="" lay-filter="submit">保存</button>
+                    <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+                </div>
+            </div>
+            <input type="hidden" name="outcarId" value="{$salaryList.id}" />
+        </form>
+
+    </div>
+</section>
+
+<script>
+    layui.use([ 'laydate', 'form'], function() {});
+    $(document).ready(function(){
+        $("#other_money").blur(function(){
+            var order = $("#order_money")[0].value;
+            var other = $("#other_money")[0].value;
+            var sum = Number(order) +Number(other);
+            $("#sum_money").val(sum.toFixed(2));
+        });
+    });
+</script>
+
+</body></html>

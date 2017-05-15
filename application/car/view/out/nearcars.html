@@ -1,0 +1,111 @@
+<style type="text/css">
+ #allmap {width:100%;height:100%;}
+</style>
+
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=6g0xlY8ISU77UsnVp7EgIt3mV54k6Gmz"></script>
+
+<div class="layui-form-item" style="display:block;height:400px;">
+	<div id="allmap"></div>
+</div>
+
+<table class="layui-table" lay-skin="row" lay-even="">
+    <thead>
+    <tr>
+        <th>用车人</th>
+        <th>预约时间</th>
+        <th>车牌号</th>
+        <th>目的地</th>
+        <th> 预看楼盘</th>
+        <th>车辆位置</th>
+        <th>状态</th>
+        <th>行驶时间</th>
+        <th>行驶距离</th>
+        <th>附近车辆</th>
+        <th style="width:50px; text-align: center">操作</th>
+    </tr>
+    </thead>
+    <tbody id="item">
+	
+
+	
+    </tbody>
+</table>
+<script type="text/javascript">
+	layui.use('table', function(){})
+    var alertMessage = function (msg,icon,type,shift,time,shade) {
+        msg = msg || '提示信息缺失';
+        icon = icon || 0;
+        type = type || 0;
+        shift = shift || 3;
+        time = time || 1000;
+        shade = shade || 0.372;
+        var config = {icon: icon,type: type,shift: shift,time:time,shade:shade};
+        layui.use(['layer'],function () {
+            layer.msg(msg,config);
+        });
+    };	
+
+	$(function(){
+		refreshCarLocal();
+		//setInterval(refreshCarLocal, 2000);
+	});
+
+	function refreshCarLocal(){
+		$.post("{:url('nearcarsAjax')}",{id:{$id}},function(data){
+			var html='';
+			if(data.code==200){
+				var map = new BMap.Map("allmap");
+				var point = new BMap.Point({$start_lng},{$start_lat});
+				map.centerAndZoom(point, 15);
+
+				for(var i in data.data){
+					var pt = new BMap.Point(data.data[i].lng,data.data[i].lat);
+					var myIcon = new BMap.Icon("http://developer.baidu.com/map/jsdemo/img/car.png", new BMap.Size(300,157));
+					var marker2 = new BMap.Marker(pt,{icon:myIcon});  // 创建标注
+					map.addOverlay(marker2);
+					
+					html+="<tr data-key='"+i+"'>";
+					html+="<td style='width: 100px;'>"+data.data[i].real_name+"</td>";
+					html+="<td style='width: 100px;'>"+data.data[i].carToOrder.booking_time+"</td>";
+					html+="<td style='width: 100px;'>"+data.data[i].number_plate+"</td>";
+					html+="<td style='width: 100px;'>"+data.data[i].carToOrder.end_address+"</td>";
+					html+="<td style='width: 100px;'>"+data.data[i].buildname+"</td>";
+					html+="<td style='width: 100px;'>"+data.data[i].address+"</td>";
+					html+="<td style='width: 100px;'>"+data.data[i].driverToOrder.status+"</td>";
+					html+="<td style='width: 100px;'>"+data.data[i].carToOrder.driver_time+"</td>";
+					html+="<td style='width: 100px;'>"+data.data[i].carToOrder.driver_start_mileage+"</td>";
+					html+="<td style='width: 100px;'>"+data.data[i].car_near_car+"</td>";
+					html+="<td style='width: 150px;text-align: center;'>";
+					html+="<a href='javascript:void(0);'>";
+					html+="<button onclick='paiche(this,"+{$id}+","+data.data[i].id+","+data.data[i].carToOrder.driver_id+","+data.data[i].lat+","+data.data[i].lng+")' class='layui-btn layui-btn-mini'>";
+					html+="<i class='fa fa-search'></i>安排派车";
+					html+="</button>";
+					html+="</a>";
+					html+="</td>";
+					html+="</tr>";
+				 }
+				 $("#item").empty();
+				 $('#item').append(html);
+
+			}else{
+				alertMessage(data.message,5,'',6);
+			}
+
+
+		},"json");
+	}
+
+function paiche(node,id,carId,driverId,lat,lng){
+	if(driverId==0){
+		alertMessage('请进入安排派车选择司机',5,'',6);
+		return;
+	}
+	$.post("{:url('paiche')}",{id:id,carid:carId,driverid:driverId},function(data){
+		if(data.code==200){
+			alertMessage(data.message,6,'',6);
+		}else{
+			alertMessage(data.message,5,'',6);
+		}
+	})
+}
+</script>

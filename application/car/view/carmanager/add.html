@@ -1,0 +1,147 @@
+<style type="text/css">
+ #allmap {width:100%;height:100%;}
+</style>
+
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=6g0xlY8ISU77UsnVp7EgIt3mV54k6Gmz"></script>
+<script type="text/javascript" src="__JS__/Validform_v5.3.2.js"></script>
+
+<section id="content-container">
+    <div id="content-body" style="margin:auto;">
+        <form id="CarAdd" class="layui-form layui-form-pane" action="{:url('add')}">
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">车牌号:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="numberPlate" class="layui-input" datatype="*" nullmsg="请填写车牌号" errormsg="车牌号不正确">
+                </div>
+            </div>
+	
+            <div class="layui-form-item">
+                <label class="layui-form-label">车型:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="carType" class="layui-input" datatype="*" nullmsg="请填写车型" errormsg="车型不正确">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">城市:</label>
+                <div class="layui-input-inline">
+                    <select name="cityId"  id="cityId" lay-filter="car">
+                        <option value="">请选择城市</option>
+						{volist name="city" id="vo"}
+						<option value="{$vo.id}" >{$vo.name}</option>
+						{/volist}
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">座位数（个）:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="seatNum" class="layui-input" datatype="*" nullmsg="请填写座位数" errormsg="座位数不正确">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">车辆地址:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="address" class="layui-input" id="suggestId" datatype="*" nullmsg="请填写车辆地址" errormsg="车辆地址不正确">
+					<input name="lat" id="lat" value="" type="hidden">
+					<input name="lng" id="lng" value="" type="hidden">
+					<div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
+                </div>
+            </div>
+  
+			<div class="layui-form-item" style="display:block;width:500px;height:500px;">
+				<div id="allmap"></div>
+			</div>
+
+            <div class="layui-form-item" style="text-align: center;">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit="" lay-filter="submit">保存</button>
+                </div>
+            </div>
+
+			<div class="layui-form-item" style="display:block;height:50px;"></div>
+        </form>
+
+    </div>
+</section>
+<script>
+    layui.use(['form'], function(){});
+
+    var alertMessage = function (msg,icon,type,shift,time,shade) {
+        msg = msg || '提示信息缺失';
+        icon = icon || 0;
+        type = type || 0;
+        shift = shift || 3;
+        time = time || 1000;
+        shade = shade || 0.372;
+        var config = {icon: icon,type: type,shift: shift,time:time,shade:shade};
+        layui.use(['layer'],function () {
+            layer.msg(msg,config);
+        });
+    };
+
+	$(function(){
+		$("#CarAdd").Validform({
+			ajaxPost:true,
+			tiptype:alertMessage,
+			callback:function(data){
+				if(data.code==200){
+					alertMessage(data.message,6,'',6);
+					window.location.href=data.data;
+				}else{
+					alertMessage(data.message,5,'',6);
+				}
+			}
+		});
+	})
+
+
+	// 百度地图API功能
+	function G(id) {
+		return document.getElementById(id);
+	}
+	var map = new BMap.Map("allmap");
+	map.centerAndZoom("海南",12);// 初始化地图,设置城市和地图级别。
+	var ac = new BMap.Autocomplete(    //建立一个自动完成的对象
+		{"input" : "suggestId"
+		,"location" : map
+	});
+	ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
+	var str = "";
+		var _value = e.fromitem.value;
+		var value = "";
+		if (e.fromitem.index > -1) {
+			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		}    
+		str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+		
+		value = "";
+		if (e.toitem.index > -1) {
+			_value = e.toitem.value;
+			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		}    
+		str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+		G("searchResultPanel").innerHTML = str;
+	});
+	var myValue;
+	ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+	var _value = e.item.value;
+		myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+		setPlace();
+	});
+	function setPlace(){
+		map.clearOverlays();    //清除地图上所有覆盖物
+		function myFun(){
+			var pp = local.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
+			$('#lat').val(pp.lat);
+			$('#lng').val(pp.lng);
+			map.centerAndZoom(pp, 18);
+			map.addOverlay(new BMap.Marker(pp));    //添加标注
+		}
+		var local = new BMap.LocalSearch(map, { //智能搜索
+		  onSearchComplete: myFun
+		});
+		local.search(myValue);
+	}
+</script>

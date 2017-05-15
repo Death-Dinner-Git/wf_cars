@@ -1,0 +1,114 @@
+[ 2017-05-15T08:31:29+08:00 ] 127.0.0.1 127.0.0.1 GET /manage/login/login.html
+[ log ] www.car.cc/manage/login/login.html [运行时间：12.392709s][吞吐率：0.08req/s] [内存消耗：504.37kb] [文件加载：45]
+[ info ] [ LANG ] D:\upupw\wf_cars\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'manage',
+    1 => 'login',
+    2 => 'login',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'host' => 'www.car.cc',
+  'connection' => 'keep-alive',
+  'upgrade-insecure-requests' => '1',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.98 Safari/537.36',
+  'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+  'accept-encoding' => 'gzip, deflate, sdch',
+  'accept-language' => 'zh-CN,zh;q=0.8',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ DB ] INIT mysql
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ RUN ] app\manage\controller\LoginController->loginAction[ D:\upupw\wf_cars\application\manage\controller\LoginController.php ]
+[ info ] [ VIEW ] D:\upupw\wf_cars\public/../application/manage\view\login\login.html [ array (
+  0 => 'url',
+  1 => 'meta_title',
+) ]
+[ info ] [ LOG ] INIT File
+
+---------------------------------------------------------------
+[ 2017-05-15T09:30:37+08:00 ] 127.0.0.1 127.0.0.1 GET /
+[ log ] www.car.cc/ [运行时间：0.111200s][吞吐率：8.99req/s] [内存消耗：360.34kb] [文件加载：47]
+[ info ] [ LANG ] D:\upupw\wf_cars\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => '',
+    1 => NULL,
+    2 => NULL,
+  ),
+)
+[ info ] [ HEADER ] array (
+  'host' => 'www.car.cc',
+  'connection' => 'keep-alive',
+  'upgrade-insecure-requests' => '1',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.98 Safari/537.36',
+  'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+  'accept-encoding' => 'gzip, deflate, sdch',
+  'accept-language' => 'zh-CN,zh;q=0.8',
+  'cookie' => 'PHPSESSID=vb29nkompgptmqo7f3g2s3fd91',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ DB ] INIT mysql
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ LOG ] INIT File
+
+---------------------------------------------------------------
+[ 2017-05-15T09:30:37+08:00 ] 127.0.0.1 127.0.0.1 GET /manage/login/login.html
+[ log ] www.car.cc/manage/login/login.html [运行时间：0.031200s][吞吐率：32.05req/s] [内存消耗：307.76kb] [文件加载：45]
+[ info ] [ LANG ] D:\upupw\wf_cars\thinkphp\lang\zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' => 
+  array (
+    0 => 'manage',
+    1 => 'login',
+    2 => 'login',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'host' => 'www.car.cc',
+  'connection' => 'keep-alive',
+  'upgrade-insecure-requests' => '1',
+  'user-agent' => 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.98 Safari/537.36',
+  'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+  'accept-encoding' => 'gzip, deflate, sdch',
+  'accept-language' => 'zh-CN,zh;q=0.8',
+  'cookie' => 'PHPSESSID=vb29nkompgptmqo7f3g2s3fd91',
+)
+[ info ] [ PARAM ] array (
+)
+[ info ] [ DB ] INIT mysql
+[ info ] [ SESSION ] INIT array (
+  'id' => '',
+  'var_session_id' => '',
+  'prefix' => 'think',
+  'type' => '',
+  'auto_start' => true,
+)
+[ info ] [ RUN ] app\manage\controller\LoginController->loginAction[ D:\upupw\wf_cars\application\manage\controller\LoginController.php ]
+[ info ] [ VIEW ] D:\upupw\wf_cars\public/../application/manage\view\login\login.html [ array (
+  0 => 'url',
+  1 => 'meta_title',
+) ]
+[ info ] [ LOG ] INIT File
+
+---------------------------------------------------------------

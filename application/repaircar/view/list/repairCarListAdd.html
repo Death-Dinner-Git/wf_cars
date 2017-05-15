@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>表格</title>
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">-->
+    <!--<script type="text/javascript" src="__JS__/jquery.js"></script>-->
+    <!--<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=6g0xlY8ISU77UsnVp7EgIt3mV54k6Gmz"></script>-->
+    <!--<script type="text/javascript" src="__JS__/Validform_v5.3.2.js"></script>-->
+</head>
+<body>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=6g0xlY8ISU77UsnVp7EgIt3mV54k6Gmz"></script>
+<script type="text/javascript" src="__JS__/Validform_v5.3.2.js"></script>
+<section id="content-container" style="display:flex; position:fixed;top: 0px;left: 0px;right: 0px;bottom: 0px;">
+    <div id="content-body" style="margin:auto;width: 800px;height: 600px;">
+        <form class="layui-form layui-form-pane" action="{:url('add')}" method="post">
+            <div class="layui-form-item">
+                <label class="layui-form-label">维护车辆:</label>
+                <div class="layui-input-inline">
+                    <select name="city_id"  id="cityId" lay-filter="car">
+                        <option value="">选择城市</option>
+                        {volist name='cityData' id='cityList' key='key'}
+                        <option value="{$cityList.id}">{$cityList.name}</option>
+                        {/volist}
+                    </select>
+                </div>
+                <div class="layui-input-inline">
+                    <select name="car_id" id="citycar">
+                        <option value="">选择车辆</option>
+                        <!--{volist name='carData' id='carList' key='key'}-->
+                        <!--<option value="{carList.id}">{$carList.number_plate}</option>-->
+                        <!--{/volist}-->
+
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+
+                <label class="layui-form-label">维护类型</label>
+                <div class="layui-input-inline">
+                    <select name="repairType">
+                        <option value="regular">定期维护</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+
+                <label class="layui-form-label">维护费用</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="" name="fee" placeholder="维护费用" class="layui-input">
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+
+                <label class="layui-form-label">维护店名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="" name="shop_name" placeholder="维护店名称" class="layui-input">
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+
+                <label class="layui-form-label">维护项目</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="" name="project" placeholder="维护项目" class="layui-input">
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+
+                <label class="layui-form-label">经办人</label>
+                <div class="layui-input-inline">
+                    <select name="manager_id" lay-search>
+                        {volist name='managerData' id='managerList' key='key'}
+                            <option value="{$managerList.id}">{$managerList.real_name}</option>
+                        {/volist}
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+
+                <label class="layui-form-label">维护原因</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="" name="reason" placeholder="维护原因" class="layui-input">
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+
+                <label class="layui-form-label">维护时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" value="" name="start_time" id='start_time' placeholder="开始时间" class="layui-input" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm'})">
+                </div>
+                <div class="layui-input-inline">
+                    <input type="text" value="" name="end_time" id='end_time' placeholder="结束时间" class="layui-input" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm'})">
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit="" lay-filter="submit">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+</section>
+<script>
+    //参考史航哥写的，感谢
+    layui.use(['form','laydate'], function(){
+        var form = layui.form();
+        form.on('select(car)', function(data){
+            $.post("{:url('chooseCar')}",{id:data.value},function(data){
+                var html='';
+                if(data.code == 200){
+                    for (var i=0;i<data.data.length;i++){
+                        html+="<option value='"+data.data[i].id+"'>"+data.data[i].number_plate+"</option>";
+                    };
+                    $("#citycar").empty();
+                    $('#citycar').append(html);
+                }else{
+                    html+="<option value=''>暂无车辆</option>";
+                    $("#citycar").empty();
+                    $('#citycar').append(html);
+                    alert(data.message);
+                }
+                form.render('select');
+            },"json");
+
+        });
+    });
+    //验证开始日期不能大于结束日期getDate(start_time)-getDate(end_time)
+//    $(document).ready(function(){
+//        $("#end_time").blur(function(){
+//            var start_time = $("#start_time")[0].value;
+//            var end_time = $("#start_time")[0].value;
+//            var start = new Date(Date.parse(start_time));
+//            var end = new Date(Date.parse(end_time));
+//            var cha = parseInt(start.getTime() - end.getTime());
+//            alert(cha);
+//
+////            if(start>end){
+////                alert('结束日期必须小于开始日期');
+////            }
+//        });
+//    });
+</script>
+
+</body></html>
