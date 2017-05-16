@@ -40,7 +40,7 @@ class UserValidate extends Validate
 
         $ret = false;
 
-        $result = \app\manage\model\User::get()->where([$fieldName=>$value])->select();
+        $result = \app\manage\model\User::load()->where([$fieldName=>$value])->select();
 
         if ($result){
             foreach ($result as $key => $model){

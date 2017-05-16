@@ -78,8 +78,8 @@ class UserController extends ManageController
                 $where =  array_merge($where, ['manager_type'=>$type]);
             }
         }
-        $dataProvider = Manager::get()->where($where)->page($pageNumber,$each)->select();
-        $count = Manager::get()->where($where)->count();
+        $dataProvider = Manager::load()->where($where)->page($pageNumber,$each)->select();
+        $count = Manager::load()->where($where)->count();
         $this->assign('meta_title', "账号管理");
         $this->assign('pages', ceil(($count)/$each));
         $this->assign('dataProvider', $dataProvider);

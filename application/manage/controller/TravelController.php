@@ -36,7 +36,7 @@ class TravelController extends ManageController
     public function listAction($pageNumber = 1,$department = '',$startTime = null, $endTime = null)
     {
         $each = 10;
-        $query = TakeCarOrder::get()->alias('t');
+        $query = TakeCarOrder::load()->alias('t');
         if ($department != ''){
             $query = $query->join([Department::tableName()=>'d'],['t.department_id = d.id'])->where('d.id',$department);
         }
@@ -93,7 +93,7 @@ class TravelController extends ManageController
         $startLat = 20.125;
         $endLng = 110;
         $endLat = 20.125;
-        $dataProvider = TakeCarOrder::get()->where('car_id',$id)->order('update_time','DESC')->limit(1)->select();
+        $dataProvider = TakeCarOrder::load()->where('car_id',$id)->order('update_time','DESC')->limit(1)->select();
         foreach($dataProvider as $key=>$value){
             $startLng = $value->start_lng;
             $startLat = $value->start_lat;
@@ -117,7 +117,7 @@ class TravelController extends ManageController
     {
         $car = [];
         $status = ['cancel'=>'未派车','ordered'=>'抢单中','over'=>'未签到','drivering'=>'行驶中','waitOrder'=>'等待抢单'];
-        $dataProvider = TakeCarOrder::get()->order('update_time','DESC')->order('car_id','ASC')->group('car_id')->limit(300)->select();
+        $dataProvider = TakeCarOrder::load()->order('update_time','DESC')->order('car_id','ASC')->group('car_id')->limit(300)->select();
         foreach($dataProvider as $key=>$value){
             $tmp = [];
             $tmp['id'] = $value->id;
@@ -153,7 +153,7 @@ class TravelController extends ManageController
         }
         $car = [];
         $status = ['cancel'=>'未派车','ordered'=>'抢单中','over'=>'未签到','drivering'=>'行驶中','waitOrder'=>'等待抢单'];
-        $dataProvider = TakeCarOrder::get()->where('car_id',$driverId)->order('update_time','DESC')->limit(1)->select();
+        $dataProvider = TakeCarOrder::load()->where('car_id',$driverId)->order('update_time','DESC')->limit(1)->select();
         foreach($dataProvider as $key=>$value){
             $tmp = [];
             $tmp['id'] = $value->id;
@@ -185,7 +185,7 @@ class TravelController extends ManageController
         if (request()->isAjax()){
             $ret = ['code'=>'1','result'=>[],'time'=>time().'000'];
 
-            $query = \app\manage\model\Gps::get()->where('SIM','1064849399578')->order('update_time','ASC');
+            $query = \app\manage\model\Gps::load()->where('SIM','1064849399578')->order('update_time','ASC');
             if (!empty($time)){
                 $ret['time'] = $time;
                 $time = date('Y-m-d H:i:s',strtotime(substr($time,0,10)));
@@ -210,8 +210,8 @@ class TravelController extends ManageController
         $startLat = 20.125;
         $endLng = 110;
         $endLat = 20.125;
-        $start = \app\manage\model\Gps::get()->where('SIM','1064849399538')->order('update_time','ASC')->limit(1)->select();
-        $end = \app\manage\model\Gps::get()->where('SIM','1064849399538')->order('update_time','DESC')->limit(1)->select();
+        $start = \app\manage\model\Gps::load()->where('SIM','1064849399538')->order('update_time','ASC')->limit(1)->select();
+        $end = \app\manage\model\Gps::load()->where('SIM','1064849399538')->order('update_time','DESC')->limit(1)->select();
         foreach($start as $key=>$value){
             $startLng = $value->lng;
             $startLat = $value->lat;

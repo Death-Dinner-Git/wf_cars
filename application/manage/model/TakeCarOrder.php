@@ -215,7 +215,7 @@ class TakeCarOrder extends Model
         $distinct = 6;
         $latNum = number_format($distinct/111,6,".","");
         $lngNum = number_format($distinct/(111*cos($lat)),6,".","");
-        return Car::get()->where('lat','>=',($lat-$latNum))->where('lat','<=',($lat+$latNum))->where('lng','>=',($lng-$lngNum))->where('lng','<=',($lng+$lngNum))->count();
+        return Car::load()->where('lat','>=',($lat-$latNum))->where('lat','<=',($lat+$latNum))->where('lng','>=',($lng-$lngNum))->where('lng','<=',($lng+$lngNum))->count();
     }
 
     /**
@@ -229,6 +229,6 @@ class TakeCarOrder extends Model
         if(empty($carId) || $carId <=0 ){
             return 0;
         }
-        return TakeCarOrder::get()->where('car_id',$carId)->count();
+        return TakeCarOrder::load()->where('car_id',$carId)->count();
     }
 }

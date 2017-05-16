@@ -55,11 +55,11 @@ class DatacountController extends ManageController
                 $name = '本月';
             }
             $tmp['name'] = $name;
-            $tmp['takeCarOrderCount'] = TakeCarOrder::get()->whereTime('create_time', 'between', $between)->count();
-            $tmp['outCarCount'] = OutCar::get()->whereTime('create_time', 'between', $between)->count();
-            $tmp['outCarMileage'] =  number_format(TakeCarOrder::get()->whereTime('create_time', 'between', $between)->sum('driver_mileage'), 2, '.', ',');
-            $tmp['outCarTime'] = TakeCarOrder::get()->whereTime('create_time', 'between', $between)->sum('driver_time');
-            $tmp['grabSingleCount'] = TakeCarOrder::get()->where('is_delete','1')->whereTime('create_time', 'between', $between)->count();
+            $tmp['takeCarOrderCount'] = TakeCarOrder::load()->whereTime('create_time', 'between', $between)->count();
+            $tmp['outCarCount'] = OutCar::load()->whereTime('create_time', 'between', $between)->count();
+            $tmp['outCarMileage'] =  number_format(TakeCarOrder::load()->whereTime('create_time', 'between', $between)->sum('driver_mileage'), 2, '.', ',');
+            $tmp['outCarTime'] = TakeCarOrder::load()->whereTime('create_time', 'between', $between)->sum('driver_time');
+            $tmp['grabSingleCount'] = TakeCarOrder::load()->where('is_delete','1')->whereTime('create_time', 'between', $between)->count();
             $dataProvider[$key] = $tmp;
         }
         $this->assign('meta_title', "数据统计");
@@ -98,7 +98,7 @@ class DatacountController extends ManageController
         $endTime = $newEnd;
         $between = [$startTime, $endTime];
         for ($i=0;$i<count($xAxis);$i++){
-            $value = OutCar::get()->alias('t')
+            $value = OutCar::load()->alias('t')
                 ->join('city c','t.start_city_id = c.id')
                 ->where('c.name',$xAxis[$i])
                 ->whereTime('out_car_time', 'between', $between)
