@@ -3,6 +3,7 @@
 namespace app\manage\model;
 
 use app\common\model\Model;
+use app\manage\validate\CityValidate;
 
 /**
  * This is the model class for table "{{%city}}".
@@ -36,6 +37,23 @@ class City extends Model
     {
         return parent::getTablePrefix().'city';
     }
+
+    /**
+     * 自动验证规则
+     * @author Sir Fu
+     */
+    protected $_validate = [
+        ['name','require',],
+        ['sort','require',],
+        ['name','max:255',],
+    ];
+
+    /**
+     * 自动完成规则
+     * @author Sir Fu
+     */
+    protected $_auto = [
+    ];
 
     /**
      * @inheritdoc
@@ -127,4 +145,53 @@ class City extends Model
     {
         return $this->hasMany('TakeCarOrder', 'city_id' , 'id');
     }
+
+    /**
+     * @return Object|\think\Validate
+     */
+    public static function getValidate(){
+        return CityValidate::load();
+    }
+
+    /**
+     * @param $data
+     * @param string $scene
+     * @return bool
+     */
+    public static function check($data,$scene = ''){
+        $validate = self::getValidate();
+
+        //设定场景
+        if (is_string($scene) && $scene !== ''){
+            $validate->scene($scene);
+        }
+
+        return $validate->check($data);
+    }
+
+    /**
+     * @description 同步我房后台数据
+     * @param $data
+     * @return string|int
+     */
+    public function synchroCity($data){
+        $validate = self::getValidate();
+
+        //设定场景
+        $validate->scene('sync');
+        if($validate->check($data)){
+            $result = self::create($data);
+            if ($result){
+                $ret = isset($data['wofang_id']) ? 'success-'.$data['wofang_id'] : '0';
+            }
+        }
+
+        if (!isset($ret)){
+            // 验证失败 输出提示信息
+            $ret = isset($data['wofang_id']) ? 'fail-'.$data['wofang_id'] : '0';
+        }
+
+        return $ret;
+    }
+
 }

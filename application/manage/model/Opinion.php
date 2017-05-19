@@ -57,4 +57,27 @@ class Opinion extends Model
             'type' => 'app', '是否阅读  0:司机 1:销售顾问',
         ];
     }
+
+    /**
+     * @return Object|\think\Validate
+     */
+    public static function getValidate(){
+        return CarValidate::load();
+    }
+
+    /**
+     * @param $data
+     * @param string $scene
+     * @return bool
+     */
+    public static function check($data,$scene = ''){
+        $validate = self::getValidate();
+
+        //设定场景
+        if (is_string($scene) && $scene !== ''){
+            $validate->scene($scene);
+        }
+
+        return $validate->check($data);
+    }
 }

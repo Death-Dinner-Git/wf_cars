@@ -4,6 +4,7 @@
 namespace app\manage\model;
 
 use app\common\model\Model;
+use app\manage\validate\BuildingBaseValidate;
 
 /**
  * This is the model class for table "{{%building_base}}".
@@ -26,6 +27,7 @@ use app\common\model\Model;
  */
 class BuildingBase extends Model
 {
+
     /**
      * @return string
      */
@@ -33,6 +35,19 @@ class BuildingBase extends Model
     {
         return parent::getTablePrefix().'building_base';
     }
+
+    /**
+     * 自动验证规则
+     * @author Sir Fu
+     */
+    protected $_validate = [
+        ['isGroup','require',],
+//        ['city_id','unique:city,city_id'],
+        ['address','max:255',],
+        ['lat','max:255',],
+        ['lng','max:255',],
+        ['name','max:255',],
+    ];
 
     /**
      * @inheritdoc
@@ -44,7 +59,6 @@ class BuildingBase extends Model
             [['create_time', 'update_time'], 'safe'],
             [['is_delete', 'wofang_id', 'city_id'], 'integer'],
             [['remark'], 'string'],
-//            [['address', 'lat', 'lng', 'name'], 'string', 'max' => 255],
 //            [['city_id'], 'exist', 'skipOnError' => true, 'targetClass' => City::className(), 'targetAttribute' => ['city_id' => 'id']],
         ];
     }
@@ -92,4 +106,53 @@ class BuildingBase extends Model
     {
         return $this->hasMany('TakeCarOrder', 'building_base_id' , 'id');
     }
+
+    /**
+     * @return Object|\think\Validate
+     */
+    public static function getValidate(){
+        return BuildingBaseValidate::load();
+    }
+
+    /**
+     * @param $data
+     * @param string $scene
+     * @return bool
+     */
+    public static function check($data,$scene = ''){
+        $validate = self::getValidate();
+
+        //设定场景
+        if (is_string($scene) && $scene !== ''){
+            $validate->scene($scene);
+        }
+
+        return $validate->check($data);
+    }
+
+    /**
+     * @description 同步我房后台数据
+     * @param $data
+     * @return string|int
+     */
+    public function synchroBuildingBase($data){
+        $validate = self::getValidate();
+
+        //设定场景
+        $validate->scene('sync');
+        if($validate->check($data)){
+            $result = self::create($data);
+            if ($result){
+                $ret = isset($data['wofang_id']) ? 'success-'.$data['wofang_id'] : '0';
+            }
+        }
+
+        if (!isset($ret)){
+            // 验证失败 输出提示信息
+            $ret = isset($data['wofang_id']) ? 'fail-'.$data['wofang_id'] : '0';
+        }
+
+        return $ret;
+    }
+
 }

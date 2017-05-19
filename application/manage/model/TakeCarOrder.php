@@ -3,6 +3,7 @@
 namespace app\manage\model;
 
 use app\common\model\Model;
+use app\manage\validate\TakeCarOrderValidate;
 
 /**
  * This is the model class for table "wf_take_car_order".
@@ -230,5 +231,53 @@ class TakeCarOrder extends Model
             return 0;
         }
         return TakeCarOrder::load()->where('car_id',$carId)->count();
+    }
+
+    /**
+     * @return Object|\think\Validate
+     */
+    public static function getValidate(){
+        return TakeCarOrderValidate::load();
+    }
+
+    /**
+     * @param $data
+     * @param string $scene
+     * @return bool
+     */
+    public static function check($data,$scene = ''){
+        $validate = self::getValidate();
+
+        //设定场景
+        if (is_string($scene) && $scene !== ''){
+            $validate->scene($scene);
+        }
+
+        return $validate->check($data);
+    }
+
+    /**
+     * @description 同步我房后台数据
+     * @param $data
+     * @return string|int
+     */
+    public function synchroTakeCarOrder($data){
+        $validate = self::getValidate();
+
+        //设定场景
+        $validate->scene('sync');
+        if($validate->check($data)){
+            $result = self::create($data);
+            if ($result){
+                $ret = isset($data['out_car_id']) ? 'success-'.$data['out_car_id'] : '0';
+            }
+        }
+
+        if (!isset($ret)){
+            // 验证失败 输出提示信息
+            $ret = isset($data['out_car_id']) ? 'fail-'.$data['out_car_id'] : '0';
+        }
+
+        return $ret;
     }
 }

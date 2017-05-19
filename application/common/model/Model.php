@@ -31,7 +31,7 @@ class Model extends \think\Model
      * @param string $layer        业务层名称
      * @param bool   $appendSuffix 是否添加类名后缀
      * @param string $common       公共模块名
-     * @return Object
+     * @return Object | \think\Model
      * @throws \think\exception\ClassNotFoundException
      */
     public static function load($name = '', $layer = 'model', $appendSuffix = false, $common = 'common')

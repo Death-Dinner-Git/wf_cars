@@ -3,8 +3,10 @@
 namespace app\manage\controller;
 
 use app\common\controller\BaseController;
+use app\manage\model\BuildingBase;
+use app\manage\model\City;
 use think\captcha\Captcha;
-use app\manage\model\User;
+use app\manage\model\Identity;
 
 /**
  * @description 后台唯一不需要权限验证的控制器
@@ -28,6 +30,19 @@ class LoginController extends BaseController
      */
     public function loginAction()
     {
+        $model = \app\manage\model\BuildingBase::load();
+        $data = [
+            'wofang_id'=>9483,
+            'name'=>'海松大厦/金谷二号',
+            'address'=>'福田区深南大道车公庙地铁口泰然九路',
+            'lng'=>'0',
+            'lat'=>'0',
+            'create_time'=>'2017:05:19 19:10:15',
+            'update_time'=>'2017:05:19 19:10:15',
+            'city_id'=>NULL,
+        ];
+        var_dump($model->synchroBuildingBase($data));
+        exit();
         if ($this->isGuest()) {
             $this->goHome();
         }
@@ -42,27 +57,32 @@ class LoginController extends BaseController
 //        }
 
         if (request()->isPost() && $username && $password && $token ) {
-            $user = new User();
-            $user->username = $username;
-            $user->password = $password;
-            $res = $user->login();
-            if (is_object($res) && (@get_class($res) == User::class)){
+            $identity = new Identity();
+            $identity->username = 'myp';
+//            $identity->username = $username;
+            $identity->password = $password;
+            $res = $identity->login();
+            var_dump($res);
+            exit();
+            if (is_object($res) && (@get_class($res) == Identity::class)){
 
 //                // 验证管理员表里是否有该用户
 //                $account_object = new Access();
-//                $where['uid']   = $user->id;
+//                $where['uid']   = $identity->id;
 //                $account_info   = $account_object->where($where)->find();
 //                if (!$account_info) {
 ////                    $this->error('该用户没有管理员权限' . $account_object->getError());
 //                }
 
 //                // 跳转
-//                if (0 < $account_info['uid'] && $account_info['uid'] === $user->id) {
+//                if (0 < $account_info['uid'] && $account_info['uid'] === $identity->id) {
 //                    $this->success('登录成功！', url('Back/index/index'));
 //                } else {
 //                    $this->logoutAction();
 //                }
 
+                var_dump($res);
+                exit();
 //                $this->goBack();
                 $this->goHome();
             }else{
@@ -81,7 +101,7 @@ class LoginController extends BaseController
      */
     public function logoutAction()
     {
-        User::logout();
+        Identity::logout();
         $this->success('退出成功！', url('login'),1);
     }
 
@@ -90,15 +110,15 @@ class LoginController extends BaseController
      * @return \think\response\View
      */
     public function registerAction(){
-        $user = new User();
-        $user->save();
-        $user->username = input('WF_username');
-        $user->password = input('WF_password');
-        $user->password_rep = input('WF_password_rep');
+        $identity = new Identity();
+        $identity->save();
+        $identity->username = input('WF_username');
+        $identity->password = input('WF_password');
+        $identity->password_rep = input('WF_password_rep');
         $token = input('__token__');
-        if ( request()->isPost() && $user->username && $user->password && $user->password_rep && $token){
-            // 调用当前模型对应的User验证器类进行数据验证
-            $user->data([
+        if ( request()->isPost() && $identity->username && $identity->password && $identity->password_rep && $token){
+            // 调用当前模型对应的Identity验证器类进行数据验证
+            $identity->data([
                 'username'=>input('WF_username'),
                 'password'=>input('WF_password'),
                 'password_rep'=>input('WF_password_rep'),
@@ -106,10 +126,10 @@ class LoginController extends BaseController
             ]);
             $validate = \think\Loader::validate('userValidate');
             $validate->scene('register');
-            if($validate->check($user)){ //注意，在模型数据操作的情况下，验证字段的方式，直接传入对象即可验证
-                $res = $user->signUp();
+            if($validate->check($identity)){ //注意，在模型数据操作的情况下，验证字段的方式，直接传入对象即可验证
+                $res = $identity->signUp();
                 if($res){
-                    if (get_class($res) == User::class){
+                    if (get_class($res) == Identity::class){
                         $this->success('注册成功','login');
                     }else{
                         $this->error($res, 'register','',1);

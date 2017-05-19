@@ -2,6 +2,7 @@
 namespace app\manage\model;
 
 use app\common\model\Model;
+use app\manage\validate\BaseUserValidate;
 
 /**
  * @description This is the model class for table "wf_base_user.  基础管理员
@@ -74,6 +75,54 @@ class BaseUser extends Model
     public function getManagers()
     {
         return $this->hasOne('Manager', 'base_user_id', 'id');
+    }
+
+    /**
+     * @return Object|\think\Validate
+     */
+    public static function getValidate(){
+        return BaseUserValidate::load();
+    }
+
+    /**
+     * @param $data
+     * @param string $scene
+     * @return bool
+     */
+    public static function check($data,$scene = ''){
+        $validate = self::getValidate();
+
+        //设定场景
+        if (is_string($scene) && $scene !== ''){
+            $validate->scene($scene);
+        }
+
+        return $validate->check($data);
+    }
+
+    /**
+     * @description 同步我房后台数据
+     * @param $data
+     * @return string|int
+     */
+    public function synchroBaseUser($data){
+        $validate = self::getValidate();
+
+        //设定场景
+        $validate->scene('sync');
+        if($validate->check($data)){
+            $result = self::create($data);
+            if ($result){
+                $ret = isset($data['username']) ? 'success-'.$data['username'] : '0';
+            }
+        }
+
+        if (!isset($ret)){
+            // 验证失败 输出提示信息
+            $ret = isset($data['username']) ? 'fail-'.$data['username'] : '0';
+        }
+
+        return $ret;
     }
 
 }

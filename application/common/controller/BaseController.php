@@ -298,7 +298,7 @@ class BaseController extends Controller
                     $tmp .= "'" . $kk . "' => '" . $vv . "', ".$format;
                 }
             }
-            $data = "[".$format . rtrim($tmp, "', ".$format) . "]".$format;
+            $data = "[".$format . rtrim($tmp, ", ".$format) .$format. "]".$format;
         }
         return $data;
     }
@@ -370,7 +370,7 @@ class BaseController extends Controller
             $this->redirect($defaultUrl,$params,$code);
         }
 
-        $backUrl = (array) session(config('user._manage_url'));
+        $backUrl = (array) session(config('identity._manage_url'));
         if (!empty($backUrl)){
             $index = count($backUrl);
             $this->success('正在恢复...',$backUrl[$index-1],1);
@@ -396,7 +396,7 @@ class BaseController extends Controller
             return $defaultUrl;
         }
 
-        $backUrl = (array) session(config('user._manage_url'));
+        $backUrl = (array) session(config('identity._manage_url'));
         if (!empty($backUrl)){
             $index = count($backUrl);
             return $backUrl[$index-1];
@@ -424,7 +424,7 @@ class BaseController extends Controller
         if ( stristr($url,$this->getLoginUrl()) ||  stristr($url,$this->getRegisterUrl()) || stristr($url,$this->getLogoutUrl()) ){
             return;
         }
-        $path = session(config('user._manage_url'));
+        $path = session(config('identity._manage_url'));
         $path = (array) $path;
         if (end($path) != $url){
             $path[] = $url;
@@ -433,7 +433,7 @@ class BaseController extends Controller
             unset($path[0]);
             $path = array_values($path);
         }
-        session(config('user._manage_url'),$path);
+        session(config('identity._manage_url'),$path);
     }
 
     /**
@@ -447,8 +447,8 @@ class BaseController extends Controller
             return $defaultUrl;
         }
 
-        if (config('user.loginUrl')){
-            return config('user.loginUrl');
+        if (config('identity.loginUrl')){
+            return config('identity.loginUrl');
         }
         return null;
     }
@@ -464,8 +464,8 @@ class BaseController extends Controller
             return $defaultUrl;
         }
 
-        if (config('user.logoutUrl')){
-            return config('user.logoutUrl');
+        if (config('identity.logoutUrl')){
+            return config('identity.logoutUrl');
         }
         return null;
     }
@@ -481,8 +481,8 @@ class BaseController extends Controller
             return $defaultUrl;
         }
 
-        if (config('user.registerUrl')){
-            return config('user.registerUrl');
+        if (config('identity.registerUrl')){
+            return config('identity.registerUrl');
         }
         return null;
     }

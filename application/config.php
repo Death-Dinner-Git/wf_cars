@@ -250,9 +250,9 @@ return [
     // 用户设置
     // +----------------------------------------------------------------------
 
-    'user'                    => [
-        // User 位置
-        'default_user_model'  => '\app\manage\model\UserModel',
+    'identity'                    => [
+        // Identity 位置
+        'default_user_model'  => '\app\manage\model\Identity',
         // 登录路由
         'loginUrl'  => 'manage/login/login',
         // 退出路由
@@ -260,7 +260,7 @@ return [
         // 注册路由
         'registerUrl'  => 'manage/login/register',
         // 当前用户对象SESSION　key
-        '_identity'  => '__USER__',
+        '_identity'  => '__IDENTITY__',
         // 当前用户 自动登录 SESSION　key
         '_auth_key'  => '__AUTH_KEY__',
         // 当前用户 登录有效期 SESSION　key
