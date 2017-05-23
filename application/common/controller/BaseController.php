@@ -18,7 +18,7 @@ class BaseController extends Controller
     {
         config('default_module',request()->module());
 
-        // 登录检测,未登录，跳转到登录
+//        // 登录检测,未登录，跳转到登录
 //        if (!$this->isGuest()) {
 //            //还没登录跳转到登录页面
 //            if ( $this->getCurrentUrl() !== strtolower($this->getLoginUrl())){
@@ -76,7 +76,7 @@ class BaseController extends Controller
     protected function isGuest()
     {
         //用户登录检测
-        $uid = Configs::getUser()->isGuest();
+        $uid = Configs::getIdentity()->isGuest();
         return $uid ? $uid : false;
     }
 

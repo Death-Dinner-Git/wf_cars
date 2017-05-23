@@ -1181,7 +1181,7 @@ class Helper
      */
     public static function getCache($userId, $route, $dependency, $root = null)
     {
-        $tag = Configs::getUser()->getModelName();
+        $tag = Configs::getIdentity()->getModelName();
         $key = [$userId, $route, $dependency, $root, $tag];
         $cache = Configs::$app->cache;
         return $cache->get($key);

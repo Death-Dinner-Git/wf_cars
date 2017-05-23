@@ -44,10 +44,31 @@
 <!-- 加载js文件-->
 <!--  全局 -->
 <script type="text/javascript" src="__JS__/site.js"></script>
+
 <script>
-    layui.use('layer', function() {
+    layui.use(['layer', 'util'], function() {
         var $ = layui.jquery,
-            layer = layui.layer;
+            layer = layui.layer,
+            util = layui.util;
+
+        //回到顶部
+        //使用内部工具组件
+        util.fixbar({
+            top: true,
+            // bar1: true,
+            bar2: true,
+            css: {right: 15, bottom: 15},
+            click: function(type){
+                if(type === 'bar1'){
+                    layer.msg('工具一');
+                }else if (type === 'bar2'){
+                    layer.msg('工具二');
+                }else if (type === 'top'){
+                    layer.msg('返回顶层');
+                }
+            }
+        });
+
     });
 </script>
 

@@ -16,6 +16,7 @@ $(function() {
             layer = layui.layer,
             form = layui.form(),
             device = layui.device();
+
         //阻止IE7以下访问
         if(device.ie && device.ie < 8){
             layer.alert('Layui最低支持ie8，您当前使用的是古老的 IE'+ device.ie + '，依旧怀旧');

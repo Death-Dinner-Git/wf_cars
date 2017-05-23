@@ -824,6 +824,7 @@
 					url: ajaxurl,
 					data: "param="+encodeURIComponent(inputval)+"&name="+encodeURIComponent($(this).attr("name")),
 					success: function(data){
+						// console.log(data);
 						if($.trim(data.status)==="y"){
 							inputobj[0].validform_valid="true";
 							data.info && inputobj.attr("sucmsg",data.info);

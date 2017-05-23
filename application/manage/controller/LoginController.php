@@ -43,15 +43,19 @@ class LoginController extends BaseController
 
         if ( request()->isAjax()){
             // 调用当前模型对应的Identity验证器类进行数据验证
+            $username = '';
+            if (request()->request('name') == 'WF_username'){
+                $username = trim(request()->request('param'));
+            }
             $data = [
-                'username'=>input('WF_username'),
+                'username'=>$username,
             ];
-            $validate = Identity::load();
+            $validate = Identity::getValidate();
             $validate->scene('loginAjax');
             if($validate->check($data)){ //注意，在模型数据操作的情况下，验证字段的方式，直接传入对象即可验证
                 return json(['status'=>'y','info'=>'验证通过']);
             }else{
-                return json(['status'=>'n','info'=>'账号不存在']);
+                return json(['status'=>'n','info'=>$validate->getError()]);
             }
         }
 

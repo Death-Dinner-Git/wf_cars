@@ -21,9 +21,9 @@ class Configs
     private static $_cache = '\think\Cache';
 
     /**
-     * @return \app\manage\model\User
+     * @return \app\manage\model\Identity
      */
-    private static $_manageUser = '\app\manage\model\User';
+    private static $_manageUser = '\app\manage\model\Identity';
 
     /**
      * @return \app\manage\model\Menu
@@ -46,9 +46,9 @@ class Configs
     }
 
     /**
-     * @return \app\manage\model\User | null
+     * @return \app\manage\model\Identity | null
      */
-    public static function getUser(){
+    public static function getIdentity(){
         if (!class_exists(self::$_manageUser)){
             return null;
         }

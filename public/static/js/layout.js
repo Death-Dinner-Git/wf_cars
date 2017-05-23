@@ -5,8 +5,7 @@
 var tab;
 
 layui.config({
-    base: '/static/js/',
-    version:new Date().getTime()
+    base: '/static/js/'
 }).use(['jquery','element','layer', 'navbar', 'tab', 'util'],function(){
 
     window.jQuery = window.$ = layui.jquery;
@@ -27,20 +26,21 @@ layui.config({
     });
 
     //使用内部工具组件
-    util.fixbar({
-        // bar1: true,
-        bar2: true,
-        css: {right: 15, bottom: 55},
-        click: function(type){
-            if(type === 'bar1'){
-                console.log('点击了bar1');
-            }else if (type === 'bar2'){
-                console.log('点击了bar2');
-            }else if (type === 'top'){
-                console.log('点击了top');
-            }
-        }
-    });
+    // util.fixbar({
+    //     top: true,
+    //     // bar1: true,
+    //     bar2: true,
+    //     css: {right: 15, bottom: 55},
+    //     click: function(type){
+    //         if(type === 'bar1'){
+    //             console.log('点击了bar1');
+    //         }else if (type === 'bar2'){
+    //             console.log('点击了bar2');
+    //         }else if (type === 'top'){
+    //             console.log('点击了top');
+    //         }
+    //     }
+    // });
 
     //iframe自适应
     $(window).on('resize', function() {
@@ -114,8 +114,9 @@ layui.config({
 
 
     // dinner-side-menu向左折叠
-    $('.dinner-side-toggle').click(function() {
+    $('#dinner-side-toggle').click(function() {
         var sideWidth = $('#dinner-side').width();
+        var icon = $(this).find('i');
         if(sideWidth === 200) {
             $('#dinner-body').animate({
                 left: '0'
@@ -126,6 +127,13 @@ layui.config({
             $('#dinner-side').animate({
                 width: '0'
             });
+            $(this).animate({
+                left: '15'
+            });
+            $('#dinner-side-logo img').animate({
+                width: '0'
+            });
+            icon.attr('class',icon.attr('data-close')).attr('title','展开侧栏');
         } else {
             $('#dinner-body').animate({
                 left: '200px'
@@ -136,6 +144,13 @@ layui.config({
             $('#dinner-side').animate({
                 width: '200px'
             });
+            $(this).animate({
+                left: '215'
+            });
+            $('#dinner-side-logo img').animate({
+                width: '150'
+            });
+            icon.attr('class',icon.attr('data-open')).attr('title','隐藏侧栏');
         }
     });
 
@@ -181,26 +196,48 @@ layui.config({
 
     $(function (){
 
-        $('.dinner-side-full').on('click', function() {
+        $('#dinner-side-full').on('click', function() {
             var docElm = document.documentElement;
-            //W3C
-            if(docElm.requestFullscreen) {
-                docElm.requestFullscreen();
+            var status = $(this).attr('data-full');
+            var icon = $(this).find('i');
+            if ( status == 'false' ){
+                fullScreen(docElm);
+                $(this).attr('data-full','true');
+                icon.attr('class',icon.attr('data-close')).attr('title','退出全屏');
+            }else{
+                exitFullScreen(docElm);
+                $(this).attr('data-full','false');
+                icon.attr('class',icon.attr('data-open')).attr('title','进入全屏');
             }
-            //FireFox
-            else if(docElm.mozRequestFullScreen) {
-                docElm.mozRequestFullScreen();
-            }
-            //Chrome等
-            else if(docElm.webkitRequestFullScreen) {
-                docElm.webkitRequestFullScreen();
-            }
-            //IE11
-            else if(elem.msRequestFullscreen) {
-                elem.msRequestFullscreen();
-            }
-            layer.msg('按Esc即可退出全屏');
         });
+
+        function fullScreen() {
+            var docElm = document.documentElement,
+                requestMethod = docElm.requestFullscreen || docElm.mozRequestFullScreen || docElm.webkitRequestFullScreen || elem.msRequestFullscreen;   //W3C  //FireFox //Chrome等 //IE11
+
+            if (requestMethod) {
+                requestMethod.call(docElm);
+            } else if (typeof window.ActiveXObject !== "undefined") {
+                var wscript = new ActiveXObject("WScript.Shell");
+                if (wscript !== null) {
+                    wscript.SendKeys("{F11}");
+                }
+            }
+        }
+
+        function exitFullScreen() {
+            var docElm= document,
+                requestMethod = docElm.cancelFullScreen || docElm.mozCancelFullScreen || docElm.webkitCancelFullScreen || elem.exitFullScreen; //W3C  //FireFox //Chrome等 //IE11
+
+            if (requestMethod) {
+                requestMethod.call(docElm);
+            } else if (typeof window.ActiveXObject !== "undefined") {
+                var wscript = new ActiveXObject("WScript.Shell");
+                if (wscript !== null) {
+                    wscript.SendKeys("{F11}");
+                }
+            }
+        }
     });
 
 });

@@ -36,7 +36,7 @@ use app\manage\validate\ManagerValidate;
 class Manager extends Model
 {
 
-    public $managerList = ['manage'=>'主管','sales'=>'个人销售','supperAdmin'=>'超级主管']; //管理员类型
+    public $managerList = ['supperAdmin'=>'超级主管','manage'=>'主管','sales'=>'个人销售','derver'=>'司机']; //管理员类型
 
     /**
      * @var string

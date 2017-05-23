@@ -1,13 +1,26 @@
 <div class="layui-header header header-theme-one">
 
     <!-- 顶级右边开始 -->
-    <div class="dinner-site-resize">
-        <div class="dinner-side-toggle">
-            <i class="fa fa-bars" aria-hidden="true"></i>
+    <div class="dinner-site-resize sidebar-close">
+
+        <!-- 顶级右侧logo区域开启 -->
+        <div id="dinner-side-logo" style="">
+            <a class="logo" href="javascript:void(0);" title="logo"><img src="/static/images/logo.png" alt="LOGO"></a>
         </div>
-        <div class="dinner-side-full" id="dinner-side-full">
-            <i class="fa fa-arrows-alt" aria-hidden="true"></i>
+        <!-- 顶级右侧logo区域结束 -->
+
+        <!-- 顶级右侧菜单关闭打开按钮开启 -->
+        <div class="dinner-side-toggle"  id="dinner-side-toggle">
+            <i class="fa fa-chevron-left" title="隐藏侧栏" data-open="fa fa-chevron-left" data-close="fa fa-chevron-right" aria-hidden="true"></i>
         </div>
+        <!-- 顶级右侧菜单关闭打开按钮结束 -->
+
+        <!-- 顶级左侧全屏按钮开启 -->
+        <div class="dinner-side-full" id="dinner-side-full" data-full="false">
+            <i class="fa fa-expand" title="进入全屏" data-open="fa fa-expand" data-close="fa fa-compress" aria-hidden="true"></i>
+        </div>
+        <!-- 顶级左侧全屏按钮结束 -->
+
     </div>
     <!-- 顶级右边结束 -->
 
@@ -15,14 +28,13 @@
 
     <div class="layui-main dinner-header-body">
 
-        <!-- 顶级左侧logo区域开启 -->
-        <div class="dinner-logo-box">
-            <a class="dinner-logo-title" href="javascript:void(0);" title="出车系统"><span style="">Car Out</span></a>
-            <a class="logo" href="javascript:void(0);" title="logo"><img src="/static/images/logo.png" alt=""></a>
+        <!-- 顶级主体左侧logo区域开启 -->
+        <div class="">
+            <a class="dinner-logo-title" href="javascript:void(0);" title="出车系统"><span style="">出车系统</span></a>
         </div>
-        <!-- 顶级左侧logo区域结束 -->
+        <!-- 顶级主体左侧logo区域结束 -->
 
-        <!-- 顶级中间区域导航开启 -->
+        <!-- 顶级主体中间区域导航开启 -->
         <div class="layui-dinner-menu">
             <!--<ul class="layui-nav clearfix">-->
                 <!--<li class="layui-nav-item layui-this">-->
@@ -30,14 +42,14 @@
                 <!--</li>-->
             <!--</ul>-->
         </div>
-        <!-- 顶级中间区域导航结束 -->
+        <!-- 顶级主体中间区域导航结束 -->
 
-        <!-- 顶级右侧区域导航开启 -->
+        <!-- 顶级主体右侧区域导航开启 -->
         <ul class="layui-nav dinner-header-item">
             <li class="layui-nav-item first">
                 <a href="javascript:;">
                     <img src="/static/images/default-user.png" class="userimg">
-                    <cite>Dinner</cite>
+                    <cite>aliveDinner</cite>
                     <span class="layui-nav-more"></span>
                 </a>
                 <dl class="layui-nav-child">
@@ -60,7 +72,7 @@
                     退出</a>
             </li>
         </ul>
-        <!-- 顶级右侧区域导航结束 -->
+        <!-- 顶级主体右侧区域导航结束 -->
 
     </div>
 </div>

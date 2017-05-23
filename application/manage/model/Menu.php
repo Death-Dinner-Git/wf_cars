@@ -83,7 +83,7 @@ class Menu extends Model
      * @return Object|\think\Validate
      */
     public static function getValidate(){
-        return CarValidate::load();
+        return MenuValidate::load();
     }
 
     /**

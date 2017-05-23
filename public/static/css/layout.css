@@ -351,27 +351,40 @@ a:hover, a:focus {
 	position: absolute;
 	cursor: pointer;
 	z-index: 19940201;
-	/*left: 170px;*/
+	/*left: 210px;*/
 	color: white;
 	text-align: center;
-	width: 30px;
-	height: 30px;
+	width: 40px;
+	height: 40px;
 	background-color: #1AA094;
-	line-height: 30px;
-	top: 25%;
+	top: 15px;
 }
-.dinner-side-toggle i,.dinner-side-full i{
+#dinner-side-logo{
+	position:absolute;
+	z-index: 19940201;
+	top: 0px;
+	left: 0px;
+	width: 150px;
+	height: 50px;
+}
+#dinner-side-logo .logo img{
+	width: 150px;
+	height: 50px;
+}
+.dinner-side-toggle i:before,.dinner-side-full i:before{
 	text-align: center;
-	padding-top: 20%;
+	vertical-align: middle;
+	line-height: 40px;
+	font-size: 22px;
 }
 .dinner-side-menu:hover,.dinner-side-toggle:hover,.dinner-side-full:hover{
 	background-color: #1fb5ac;
 }
 .dinner-side-full{
-	right: 30px;
+	right: 20px;
 }
 .dinner-side-toggle{
-	left: 170px;
+	left: 215px;
 }
 
 /* 头部左侧 */

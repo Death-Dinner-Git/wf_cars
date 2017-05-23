@@ -26,7 +26,11 @@ class SynchronController extends Controller{
 				$data['level'] = $value->level;
 				$data['orders'] = $value->orders;
 				$data['isGroup'] = $value->isGroup;
-				$data['status'] = $value->status;
+				if($value->status == 5){
+					$data['status'] = 1;
+				}else{
+					$data['status'] = 2;
+				}
 				$data['create_time'] = date('Y:m:d H:i:s');
 				$data['update_time'] = date('Y:m:d H:i:s');
 				$data['status'] = $value->status;
@@ -49,8 +53,8 @@ class SynchronController extends Controller{
 				$data['wofang_id'] = $value->id;
 				$data['name'] = $value->name;
 				$data['pid'] = $value->pid;
-				//$data['level'] = $value->level;
 				$data['sort'] = $value->orders;
+				$data['is_delete'] = 1;
 				$data['create_time'] = date('Y:m:d H:i:s');
 				$data['update_time'] = date('Y:m:d H:i:s');
 				$addID[] = Loader::model('City')->synchroCity($data);
@@ -72,8 +76,6 @@ class SynchronController extends Controller{
 			foreach($obj as $key=>$value){
 				$data['wofang_id'] = $value->id;
 				$data['name'] = $value->title;
-				//$data['is_delete'] = $value->status;
-				//$data['city_id'] = $value->city;
 				$data['address'] = $value->address;
 				$data['lng'] = $value->lng;
 				$data['lat'] = $value->lat;
@@ -84,7 +86,7 @@ class SynchronController extends Controller{
 			}
 			return json(['code'=>200,'message'=>'同步成功','data'=>$addID]);
 		}else{
-			return json(['code'=>200,'message'=>'同步失败','data'=>$param]);
+			return json(['code'=>404,'message'=>'同步失败','data'=>$param]);
 		}
 	}
 
@@ -96,29 +98,33 @@ class SynchronController extends Controller{
 		$obj = json_decode($param['data']);
 		if($param){
 			foreach($obj as $key=>$value){
+				
+				$baseuserdata['username'] = $value->username;
+				$baseuserdata['password'] = md5(888888);
+				$baseuserdata['remark'] = $value->password;
+				$baseuserdata['VERSION_NUM'] = 0;
+				$baseuserdata['create_time'] = date('Y:m:d H:i:s');
+				$baseuserdata['update_time'] = date('Y:m:d H:i:s');				
+				$addID[] = Loader::model('BaseUser')->synchroBaseUser($baseuserdata);
+				$data['base_user_id'] = Loader::model('BaseUser')::where('username',$value->username)->value('id');
 				$data['wofang_id'] = $value->id;
-				//$data['name'] = $value->username;
-				//$data['is_delete'] = $value->password;
 				$data['real_name'] = $value->trueName;
 				$data['phone'] = $value->tel;
-				$data['department_id'] = $value->deaperId;
-				//$data['status'] = $value->status;
-				//$data['lat'] = $value->isPerson;
-				//$data['lat'] = $value->roleId;
+				if($value->status==5){
+					$data['status'] = 1;
+				}else{
+					$data['status'] = 2;
+				}
 				$data['manager_type'] = $value->userType;
-				$data['base_user_id'] = $value->id;
-
 				$data['create_time'] = date('Y:m:d H:i:s');
 				$data['update_time'] = date('Y:m:d H:i:s');
-				$addID[] = Loader::model('Manager')->synchroMag($data);
+				$data['department_id'] = 
+				Loader::model('Department')::where('wofang_id',$value->deaperId)->value('id');
+				$addID[] = Loader::model('Manager')->synchroManager($data);
 			}
-			if(count($param) == count($addID)){
-				return json(['code'=>200,'message'=>'完全同步成功','data'=>$param]);
-			}else{
-				return json(['code'=>200,'message'=>'部分同步成功','data'=>$param]);
-			}
+			return json(['code'=>200,'message'=>'同步成功','data'=>$addID]);
 		}else{
-			return json(['code'=>200,'message'=>'同步失败','data'=>$param]);
+			return json(['code'=>404,'message'=>'同步失败','data'=>$param]);
 		}
 	}
 
@@ -130,31 +136,34 @@ class SynchronController extends Controller{
 		$obj = json_decode($param['data']);
 		if($param){
 			foreach($obj as $key=>$value){
+
 				$data['wofang_id'] = $value->id;
-				$data['used_id'] = $value->userId;
-				$data['manager_id'] = $value->clientId;
-				//$data['start_address'] = $value->fromCity;
-				//$data['real_name'] = $value->aimCity;
+				$data['build_id'] = Loader::model('BuildingBase')::where('wofang_id',$value->buildingId)->value('id');
+				$data['start_city_id'] = Loader::model('City')::where('wofang_id',$value->fromCity)->value('id');
+				$data['end_city_id'] = Loader::model('City')::where('wofang_id',$value->aimCity)->value('id');
+				$data['manager_id'] = Loader::model('Manager')::where('wofang_id',$value->userId)->value('id');
 				$data['customer_num'] = $value->clientNum;
 				$data['oil_cost'] = $value->oilCost;
 				$data['out_car_time'] = $value->outAt;
-				$data['build_id'] = $value->buildingId;
-				$data['status'] = $value->status;
-				//$data['request_id'] = $value->getArrangeId;
 				$data['start_address'] = $value->carAddress;
 				$data['start_lng'] = $value->mapLng;
 				$data['start_lat'] = $value->mapLat;
+				$data['request_id'] = $value->askType;
+				$data['is_delete'] = 1;
 				$data['create_time'] = date('Y:m:d H:i:s');
 				$data['update_time'] = date('Y:m:d H:i:s');
 				$addID[] = Loader::model('OutCar')->synchroOutCar($data);
+				
+				$take_car_order_id = Loader::model('OutCar')::where('wofang_id',$value->id)->value('take_car_order_id');
+				if($take_car_order_id){
+					$takeordercardata['booking_time'] = $value->outAt;
+					$addID[] = Loader::model('TakeCarOrder')->synchroTakeCarOrder($takeordercardata);
+				}
+				
 			}
-			if(count($param) == count($addID)){
-				return json(['code'=>200,'message'=>'完全同步成功','data'=>$param]);
-			}else{
-				return json(['code'=>200,'message'=>'部分同步成功','data'=>$param]);
-			}
+			return json(['code'=>200,'message'=>'同步成功','data'=>$addID]);
 		}else{
-			return json(['code'=>200,'message'=>'同步失败','data'=>$param]);
+			return json(['code'=>404,'message'=>'同步失败','data'=>$param]);
 		}
 	}
 

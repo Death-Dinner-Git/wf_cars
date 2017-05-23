@@ -65,7 +65,7 @@ class MenuHelper
     private static function getAssignedMenu($userId, $root = null, $callback = null, $refresh = false)
     {
         $cache = Configs::getCache();
-        $manager = Configs::getUser();
+        $manager = Configs::getIdentity();
 
         $menus = Menu::get()->where(['type'=>'1'])->order('id asc')->column(Menu::getField());
         $key = __METHOD__.$userId.Configs::CACHE_TAG;
@@ -336,7 +336,7 @@ class MenuHelper
         }elseif ($menus){
             $menus = self::generateMenuItem($menus);
         }else{
-            Configs::getUser()->logout();
+            Configs::getIdentity()->logout();
             throw new \think\Exception('该账号未激活-请联系管理员', 403);
         }
         return $menus;
@@ -356,7 +356,7 @@ class MenuHelper
         if ($menus && $options){
             $menus = ['menus'=>$menus,'attr'=>$options,'prefix'=>self::$_prefixUrl, 'suffix'=>self::$_suffix.'?iframe=true'];
         }else{
-            Configs::getUser()->logout();
+            Configs::getIdentity()->logout();
             throw new \think\Exception('该账号未激活-请联系管理员', 403);
         }
         return $menus;
