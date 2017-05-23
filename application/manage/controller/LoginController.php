@@ -3,8 +3,6 @@
 namespace app\manage\controller;
 
 use app\common\controller\BaseController;
-use app\manage\model\BuildingBase;
-use app\manage\model\City;
 use think\captcha\Captcha;
 use app\manage\model\Identity;
 
@@ -21,7 +19,7 @@ class LoginController extends BaseController
      */
     public function indexAction()
     {
-        $this->redirect('manage/login/login');
+        $this->redirect($this->getLoginUrl());
     }
 
     /**
@@ -30,19 +28,6 @@ class LoginController extends BaseController
      */
     public function loginAction()
     {
-        $model = \app\manage\model\BuildingBase::load();
-        $data = [
-            'wofang_id'=>9483,
-            'name'=>'海松大厦/金谷二号',
-            'address'=>'福田区深南大道车公庙地铁口泰然九路',
-            'lng'=>'0',
-            'lat'=>'0',
-            'create_time'=>'2017:05:19 19:10:15',
-            'update_time'=>'2017:05:19 19:10:15',
-            'city_id'=>NULL,
-        ];
-        var_dump($model->synchroBuildingBase($data));
-        exit();
         if ($this->isGuest()) {
             $this->goHome();
         }
@@ -56,14 +41,25 @@ class LoginController extends BaseController
 //            $this->error('验证码输入错误');
 //        }
 
+        if ( request()->isAjax()){
+            // 调用当前模型对应的Identity验证器类进行数据验证
+            $data = [
+                'username'=>input('WF_username'),
+            ];
+            $validate = Identity::load();
+            $validate->scene('loginAjax');
+            if($validate->check($data)){ //注意，在模型数据操作的情况下，验证字段的方式，直接传入对象即可验证
+                return json(['status'=>'y','info'=>'验证通过']);
+            }else{
+                return json(['status'=>'n','info'=>'账号不存在']);
+            }
+        }
+
         if (request()->isPost() && $username && $password && $token ) {
             $identity = new Identity();
-            $identity->username = 'myp';
-//            $identity->username = $username;
+            $identity->username = $username;
             $identity->password = $password;
             $res = $identity->login();
-            var_dump($res);
-            exit();
             if (is_object($res) && (@get_class($res) == Identity::class)){
 
 //                // 验证管理员表里是否有该用户
@@ -81,12 +77,10 @@ class LoginController extends BaseController
 //                    $this->logoutAction();
 //                }
 
-                var_dump($res);
-                exit();
 //                $this->goBack();
                 $this->goHome();
             }else{
-                $this->error($res, null,'',1);
+                $this->error($res, $this->getLoginUrl(),'',1);
             }
         }
         // 临时关闭当前模板的布局功能
@@ -102,7 +96,7 @@ class LoginController extends BaseController
     public function logoutAction()
     {
         Identity::logout();
-        $this->success('退出成功！', url('login'),1);
+        $this->success('退出成功！', $this->getLoginUrl(),1);
     }
 
     /**

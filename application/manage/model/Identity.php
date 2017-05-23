@@ -49,11 +49,11 @@ class Identity extends Model
     //密码加密前缀
     private static $passwordPrefix = '';
     //密码加密后缀
-    private static $passwordSuffix = 'carapp';
+    private static $passwordSuffix = '';
     //加密方式；可选参数1和2；默认是1；
     private static $encryptType = '1';
     //加密方式；可选参数1和2；默认是1；
-    private static $login_time = 'logined_at';
+    private static $login_time = 'update_time';
     //是否开启登录IP记录
     private static $isLog = false;
     //用户加密SSL
@@ -236,26 +236,29 @@ class Identity extends Model
         $validate = self::getValidate();
         $validate->scene('login');
         $ret = true;
-        if( $validate->check($this)){
+        if( $validate->check($this -> data)){
             if ($identity = $this->findIdentity()){
                 if ($this->validatePassword($this->password)){
-                    halt($this);
                     if ($this->log()){
-                        $this->logined_at = time();
-                        $this->setAuthKey();
-                        $this->setPassword($this->password);
-                        $db= $this->isUpdate(true,['username'=>$this->username])->save([
-                            'password'=>$this->password,
-                            'logined_at'=>$this->logined_at,
-                            'auth_key'=>$this->auth_key,
-                            'ip'=>$identity->ip,
-                            'status'=>$identity->status,
-                        ]);  //这里的save()执行的是更新
-                        if($db){
+                        $login_time = self::$login_time;
+                        $this->$login_time = date('Y-m-d H:i:s');
+
+                        $enPassword = $this->setPassword($this->password);
+
+                        //这里的save()执行的是更新
+                        $result = $identity->load()
+                            ->alias('t')
+                            ->join(BaseUser::tableName().' b','t.base_user_id = b.id')
+                            ->where(['b.username'=>$this->username])
+                            ->where('t.manager_type','in',self::$allowList)
+                            ->update([
+                                'b.password'=>$enPassword,
+                                't.update_time'=>$this->$login_time
+                            ]);
+                        if($result){
                             //if true, default keep one week online;
                             $default = $this->rememberMe ? config('identity._rememberMe_duration') : ( config('identity._default_duration') ? config('identity._default_duration') : 0 ) ;
                             $duration = $duration ? $duration : $default ;
-                            $identity = $this->getIdentity();
                             $ret = $this->setIdentity($identity, $duration);
                         }else{
                             $ret = '服务出错';
@@ -408,22 +411,25 @@ class Identity extends Model
      */
     private function log()
     {
-        $user = $this->getIdentity();
-        if ($user === null) {
+        if (!self::$isLog){
+            return true;
+        }
+        $identity = $this->findIdentity();
+        if ($identity === null) {
             return false;
         }
-        $res = false;
-        $ip = json_decode($user->ip, true);
+        $ret = false;
+        $ip = json_decode($identity->getData('ip'), true);
         $currentIp = request()->ip();
         if (!$ip){
             $ip = ['last'=>['127.0.0.1',date('Y-m-d H:i:s')], 'current'=>['127.0.0.1',date('Y-m-d H:i:s')],'often'=>[],'haply'=>[],'once'=>[]];
         }
         if (in_array($currentIp,$ip['often'])){
-            $res = true;
+            $ret = true;
         }
         $time = 1;
         $date = date('Y-m-d H:i:s');
-        if (!$res){
+        if (!$ret){
             $unset =false;
             foreach ($ip['once'] as $oKey => $oValue){
                 if (count($ip['once'])>=10 && !$unset){
@@ -443,7 +449,7 @@ class Identity extends Model
             }
         }
         if (in_array($currentIp,$ip['haply'])){
-            $res = true;
+            $ret = true;
             if ($time >= 15){
                 $ip['often'][] = $currentIp;
                 if (count($ip['often'])>10){
@@ -464,8 +470,8 @@ class Identity extends Model
         $ip['once'][$currentIp][1] = $date;
         $ip['last'] = $ip['current'];
         $ip['current'] = [$currentIp,date('Y-m-d H:i:s')];
-        $user->ip = json_encode($ip);
-        $user->status = $res ? '1' : '0';
+        $identity->ip = json_encode($ip);
+        $identity->status = $ret ? '1' : '0';
         return true;
     }
 
@@ -479,8 +485,6 @@ class Identity extends Model
     protected function setIdentity(Identity $_identity, $duration = 0)
     {
         session(config('identity._identity'),$_identity);
-        $this->setRememberMe($_identity, $duration);
-        $this->setToken();
         return $_identity;
     }
 
@@ -494,7 +498,7 @@ class Identity extends Model
     protected function setRememberMe(Identity $_identity, $duration = 0)
     {
         $duration = (int) $duration;
-        if ($duration<1 || !($_identity && $_identity->getData('username'))){
+        if ($duration<1 || !($_identity && $_identity->username)){
             return null;
         }
         if ( @get_class($_identity) == get_class($this) ){
@@ -548,6 +552,7 @@ class Identity extends Model
             ->join(BaseUser::tableName().' b','t.base_user_id = b.id')
             ->where(['b.username'=>$username])
             ->where('t.manager_type','in',self::$allowList)
+            ->field('*,t.update_time as t_update_time,b.update_time as b_update_time')
             ->find();
     }
 
@@ -568,6 +573,7 @@ class Identity extends Model
             ->join(BaseUser::tableName().' b','t.base_user_id = b.id')
             ->where(['t.phone'=>$phone])
             ->where('t.manager_type','in',self::$allowList)
+            ->field('*,t.update_time as t_update_time,b.update_time as b_update_time')
             ->find();
     }
 
@@ -588,6 +594,7 @@ class Identity extends Model
             ->join(BaseUser::tableName().' b','t.base_user_id = b.id')
             ->where(['t.email'=>$email])
             ->where('t.manager_type','in',self::$allowList)
+            ->field('*,t.update_time as t_update_time,b.update_time as b_update_time')
             ->find();
     }
 
@@ -701,7 +708,6 @@ class Identity extends Model
     public function setAuthKey()
     {
         $this->setAttr('auth_key',md5(md5(time()).$this->username));
-//        $this->setAttr('auth_key',md5(md5($this->logined_at.time()).$this->username));
         $this->setToken($this->auth_key);
     }
 
@@ -732,8 +738,8 @@ class Identity extends Model
             return false; //Password must be a string and cannot be empty
         }
 
-        $identity = $this->getIdentity();
-        $hash = $identity->password_hash;
+        $identity = $this->findIdentity();
+        $hash =$identity->getData('password');
         $password = $this->getJoinPassword($password);
         if (self::$encryptType == 1){
             if ($this->generateHash($password) === $hash){
@@ -786,15 +792,17 @@ class Identity extends Model
     }
 
     /**
-     * Generates password hash from password and sets it to the model
+     * @description Generates password hash from password and sets it to the model
+     * @param $password
+     * @return string
      *
-     * @param string $password
      */
     public function setPassword($password)
     {
-//        $baseHash = $this->logined_at ? $this->logined_at.$password : $password ;
-        $baseHash = $password;
-        $this->setAttr('password_hash',$this->generateHash($baseHash));
+        $password = $this->getJoinPassword($password) ;
+        $password = $this->generateHash($password);
+        $this->setAttr('password',$password);
+        return $password;
     }
 
     /**
@@ -1031,8 +1039,10 @@ class Identity extends Model
             if (!is_string($name) || $name === '') {
                 return $identity;
             }
-            if (isset($identity->$name)){
-                return $identity->$name;
+            if (is_string($name) && $identity){
+                if (array_key_exists($name, $identity->data)) {
+                    return $identity->data[$name];
+                }
             }
         }
         return null;
@@ -1086,10 +1096,21 @@ class Identity extends Model
      */
     public function __get($name)
     {
-        $res = null;
-        if (!is_null($name) && !array_key_exists($name, $this->data)) {
-            $this->$name = $this->getIdentity($name);
+        //排除一些非法属性名称
+        if (is_null($name) || !is_string($name) || $name === ''){
+            return parent::__get($name);
         }
+
+        if (!property_exists($this,$name)){
+            if (array_key_exists($name, $this->data)) {
+                return $this->data[$name];
+            }
+
+            if ($this->getIdentity()) {
+                return $this->getIdentity($name);
+            }
+        }
+
         return parent::__get($name); // TODO: Change the autogenerated stub
     }
 

@@ -41,5 +41,4 @@ class Model extends \think\Model
         }
         return Loader::model($name,$layer,$appendSuffix,$common);
     }
-
 }

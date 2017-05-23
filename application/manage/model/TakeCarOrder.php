@@ -266,16 +266,29 @@ class TakeCarOrder extends Model
 
         //设定场景
         $validate->scene('sync');
+
+        $identity = isset($data['out_car_id']) ? $data['out_car_id'] : '0';
         if($validate->check($data)){
+            //插入
             $result = self::create($data);
             if ($result){
-                $ret = isset($data['out_car_id']) ? 'success-'.$data['out_car_id'] : '0';
+                $ret = !empty($identity) ? 'success-'.$identity : '0';
+            }
+        }else{
+            //更新
+            $validate->scene('syncUpdate');
+            if($validate->check($data)){
+                $where = ['out_car_id'=>(!empty($identity) ? $identity : '0')];
+                $result = self::update($data,$where);
+                if ($result){
+                    $ret = !empty($identity) ? 'update-'.$identity : '0';
+                }
             }
         }
 
         if (!isset($ret)){
             // 验证失败 输出提示信息
-            $ret = isset($data['out_car_id']) ? 'fail-'.$data['out_car_id'] : '0';
+            $ret = !empty($identity) ? 'fail-'.$identity : '0';
         }
 
         return $ret;

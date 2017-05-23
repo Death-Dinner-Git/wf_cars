@@ -20,6 +20,7 @@ class DepartmentValidate extends Validate
     protected $message = [
         'wofang_id.require'  =>  ':attribute 不能为空',
         'wofang_id.unique'  =>  ':attribute 已存在',
+        'wofang_id.exist'  =>  ':attribute 不存在',
     ];
 
     /**
@@ -27,6 +28,7 @@ class DepartmentValidate extends Validate
      */
     protected $scene = [
         'sync'   =>  ['wofang_id'],
+        'syncUpdate'   =>  ['wofang_id|我房网第三方Id'  =>  'require|exist:department,wofang_id'],
         'create'   =>  ['wofang_id'],
         'update'  =>  ['wofang_id'],
         'save'  =>  [],

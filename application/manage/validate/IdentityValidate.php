@@ -26,6 +26,7 @@ class IdentityValidate extends Validate
     protected $message = [
         '__token__.token'  =>  ':attribute 无效',
         'username.require'  =>  ':attribute 不能为空',
+        'username.exist'  =>  ':attribute 不存在',
         'password.require'  =>  ':attribute 不能为空',
         'password_rep.require'  =>  ':attribute 不能为空',
         'password_rep.comparePassword'  =>  '两次密码 不一致',
@@ -39,10 +40,26 @@ class IdentityValidate extends Validate
         'create'   =>  ['username','password'],
         'update'  =>  ['email'],
         'save'  =>  [],
+        'loginAjax'   =>  ['username'=> 'usernameExist:base_user,username'],
         'login'  =>  ['username','password','__token__'],
         'signUp'  =>  ['username','password'],
         'register'  =>  ['username','password','password_rep','__token__'],
     ];
+
+    /**
+     * @description 自定义验证规则
+     * @access protected
+     * @param mixed     $value  字段值
+     * @param mixed     $rule  验证规则
+     * @param array     $data  数据
+     * @param string    $param  字段
+     * @return bool|string
+     */
+    protected function usernameExist($value, $rule, $data,$param)
+    {
+        $ret = !$this->unique($value, $rule, $data, $param);
+        return $ret;
+    }
 
     /**
      * @description 自定义验证规则
