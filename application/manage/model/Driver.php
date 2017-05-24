@@ -32,12 +32,11 @@ use app\common\model\Model;
 class Driver extends Model
 {
     /**
-     * @return string
+     * 数据库表名
+     * 加格式‘{{%}}’表示使用表前缀，或者直接完整表名
+     * @author Sir Fu
      */
-    public static function tableName()
-    {
-        return parent::getTablePrefix().'driver';
-    }
+    protected $table = '{{%driver}}';
 
     /**
      * @var string

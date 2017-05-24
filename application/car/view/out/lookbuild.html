@@ -208,6 +208,7 @@ function writeObj(obj){
 <script>
 layui.use('form', function(){
 	var form = layui.form();
+	alert('sdddd');
 	form.on('select(car)', function(data){
 	 $.post("{:url('chooseCar')}",{id:data.value},function(data){
 		var html='';
@@ -227,7 +228,6 @@ layui.use('form', function(){
 	 },"json");
 
 	});
-
 	form.on('select(driver)', function(data){
 	 $.post("{:url('chooseDriver')}",{id:data.value},function(data){
 		var html='';

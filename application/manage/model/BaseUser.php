@@ -21,6 +21,13 @@ use app\manage\validate\BaseUserValidate;
 class BaseUser extends Model
 {
     /**
+     * 数据库表名
+     * 加格式‘{{%}}’表示使用表前缀，或者直接完整表名
+     * @author Sir Fu
+     */
+    protected $table = '{{%base_user}}';
+
+    /**
      * @var string
      */
     protected $pk = 'id';
@@ -36,14 +43,6 @@ class BaseUser extends Model
         'username',
         'VERSION_NUM',
     ];
-
-    /**
-     * @return string
-     */
-    public static function tableName()
-    {
-        return parent::getTablePrefix().'base_user';
-    }
 
     /**
      * 自动验证规则

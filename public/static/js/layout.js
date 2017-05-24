@@ -96,8 +96,22 @@ layui.config({
     navbar.render();
     //监听点击事件
     navbar.on('click(side)', function(data) {
+        console.log(data.field);
         tab.tabAdd(data.field);
     });
+    var _tabElement = $('#dinner-body .layui-tab-title');
+    if (_tabElement.length >= 1){
+        var _url = _tabElement.attr('data-url'),
+            _icon = _tabElement.attr('data-icon'),
+            _title = _tabElement.attr('data-title');
+        if(_url !== undefined){
+            tab.tabAdd({
+                href: _url,
+                icon: _icon || 'fa fa-circle-o',
+                title: _title || '控制面板'
+            });
+        }
+    }
 
     // //模拟点击内容管理
     // $('.beg-layout-menu').find('a[data-module-id=1]').click();

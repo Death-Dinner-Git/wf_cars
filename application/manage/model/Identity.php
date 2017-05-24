@@ -34,8 +34,12 @@ use app\manage\model\Manager;
  */
 class Identity extends Model
 {
-
-    public $table = 'wf_manager';
+    /**
+     * 数据库表名
+     * 加格式‘{{%}}’表示使用表前缀，或者直接完整表名
+     * @author Sir Fu
+     */
+    protected $table = '{{%manager}}';
 
     //登录请求路由
     public $loginUrl = 'manage/login/login';
@@ -108,14 +112,6 @@ class Identity extends Model
         'password',
         'password_rep',
     ];
-
-    /**
-     * @return string
-     */
-    public static function tableName()
-    {
-        return parent::getTablePrefix().'manager';
-    }
 
     /**
      * 自动验证规则
@@ -205,10 +201,9 @@ class Identity extends Model
             $db= $this->save([
                 'uid'=>rand(100000,999999),
                 'username'=>$this->getData('username'),
-                'password_hash'=>$this->generateHash($newPassword),
-                'registered_at'=>$this->thisTime,
-                'logined_at'=>$this->thisTime,
-                'updated_at'=>$this->thisTime,
+                'password'=>$this->generateHash($newPassword),
+                'create_time'=>$this->thisTime,
+                'update_time'=>$this->thisTime,
             ]);  //这里的save()执行的是添加
             if ($db){
                 $res = $this;
@@ -320,32 +315,23 @@ class Identity extends Model
      * 根据用户ID获取用户信息
      * @param  integer $id 用户ID
      * @param  string $field
-     * @return array  用户信息
-     * @author Sir Fu
+     * @return array|string  用户信息
      */
     public function getIdentityInfo($id = null, $field = null)
     {
+        $ret = [];
         if (!$id) {
-            return false;
+            return $ret;
         }
-        if (is_dir(APP_DIR . 'user') && (D('Admin/Module')->where('name="Identity" and status="1"')->count())) {
-            $user_info = D('Identity/Identity')->detail($id);
-        } else {
-            $user_info = $this->find($id);
+        $identity = self::getIdentityById($id);
+        if (!$identity){
+            $ret = $identity->getData($field);
+
         }
-        unset($user_info['password']);
-        if (!$field) {
-            return $user_info;
-        }
-        if ($user_info[$field]) {
-            return $user_info[$field];
-        } else {
-            return false;
-        }
+        return $ret;
     }
 
     /**
-     * 自动设置登录状态
      * @param int $duration
      * @return int
      */
@@ -610,8 +596,13 @@ class Identity extends Model
         if (empty($id)) {
             return null;
         }
-
-        return self::get(['id' => $id]);
+        return self::load()
+            ->alias('t')
+            ->join(BaseUser::tableName().' b','t.base_user_id = b.id')
+            ->where(['t.base_user_id'=>$id])
+            ->where('t.manager_type','in',self::$allowList)
+            ->field('*,t.update_time as t_update_time,b.update_time as b_update_time')
+            ->find();
     }
 
     /**

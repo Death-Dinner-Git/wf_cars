@@ -4,7 +4,15 @@ namespace app\manage\model;
 
 use app\common\model\Model;
 
-class Gps extends Model {
+class Gps extends Model
+{
+
+    /**
+     * 数据库表名
+     * 加格式‘{{%}}’表示使用表前缀，或者直接完整表名
+     * @author Sir Fu
+     */
+    protected $table = '{{%gps}}';
 
     /**
      * @var string
@@ -27,14 +35,6 @@ class Gps extends Model {
         'is_delete',
         'update_time',
     ];
-
-    /**
-     * @return string
-     */
-    public static function tableName()
-    {
-        return parent::getTablePrefix().'gps';
-    }
 
     /**
      * 自动验证规则

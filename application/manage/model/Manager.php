@@ -35,6 +35,12 @@ use app\manage\validate\ManagerValidate;
  */
 class Manager extends Model
 {
+    /**
+     * 数据库表名
+     * 加格式‘{{%}}’表示使用表前缀，或者直接完整表名
+     * @author Sir Fu
+     */
+    protected $table = '{{%manager}}';
 
     public $managerList = ['supperAdmin'=>'超级主管','manage'=>'主管','sales'=>'个人销售','derver'=>'司机']; //管理员类型
 
@@ -62,14 +68,6 @@ class Manager extends Model
         'sex',
         'rongyun_token',
     ];
-
-    /**
-     * @return string
-     */
-    public static function tableName()
-    {
-        return parent::getTablePrefix().'manager';
-    }
 
     /**
      * 自动验证规则

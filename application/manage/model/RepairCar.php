@@ -30,12 +30,11 @@ use app\common\model\Model;
 class RepairCar extends Model
 {
     /**
-     * @return string
+     * 数据库表名
+     * 加格式‘{{%}}’表示使用表前缀，或者直接完整表名
+     * @author Sir Fu
      */
-    public static function tableName()
-    {
-        return parent::getTablePrefix().'repair_car';
-    }
+    protected $table = '{{%repair_car}}';
 
     /**
      * @inheritdoc

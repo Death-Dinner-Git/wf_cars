@@ -1,12 +1,11 @@
 var layer = window.parent.layer ? window.parent.layer : window.layer;
-// var _width = document.documentElement.clientWidth;//获取页面可见宽度
-// var _height = document.documentElement.clientHeight;//获取页面可见高度
+var _width = document.documentElement.clientWidth;//获取页面可见宽度
+var _height = document.documentElement.clientHeight;//获取页面可见高度
 
 $(function() {
     //layui
     layui.config({
-        base: '/static/js/',
-        version:new Date().getTime()
+        base: '/static/js/'
     }).use(['jquery','element','layer', 'util', 'code', 'form','laydate'],function(){
         window.jQuery = window.$ = layui.jquery;
         window.layer = layui.layer;

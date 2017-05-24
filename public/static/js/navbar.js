@@ -248,7 +248,7 @@ layui.define(['element','layer'], function(exports) {
                     _itemUrl = _prefix + item.url + _suffix.replace(/\.html\?/,'&');
 				}
                 itemHtml += '<a class="'+ _aClass +'" href="javascript:;" data-url="'+ _itemUrl +'">' +
-					'<i class="'+ _iClass +'"></i> ' +
+					'<i class="'+ _iClass +'" data-icon="'+ _iClass +'"></i> ' +
 					'<cite class="title">'+ item.text +'</cite> ' +
 					'</a>';
             }

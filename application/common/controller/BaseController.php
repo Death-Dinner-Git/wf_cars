@@ -4,6 +4,7 @@ namespace app\common\controller;
 
 use think\Controller;
 use app\common\components\Configs;
+use think\response\View;
 
 /**
  * @description The module Index base controller
@@ -30,18 +31,43 @@ class BaseController extends Controller
         $currentUrl = $this->getCurrentUrl();
 
         //兼容iframe
-        $url = '/';
+        $url = $this->getUrl();
         // 权限检测，首页不需要权限
-        if ('manage/index/index' === strtolower($currentUrl)) {
-            $currentUrl = 'manage/index/home';
+        if('manage/index/index' === strtolower($currentUrl) || $url === '/'){
+            if ($url === '/'){
+                $url = $url.$this->getHomeUrl();
+            }
         }else{
             if (false) {
                 $this->error('权限不足！', url('manage/Index/index'));
             }
         }
-        $this->assign('url',$url.$currentUrl.'.html?iframe=true');
+
         //模板转换
-        if (!isset($_REQUEST['iframe']) || $_REQUEST['iframe'] !== 'true'){
+        if (!isset($_REQUEST['iframe'])){
+            if (stristr($url,'?') !== false){
+                $path = explode('?',$url);
+                if (isset($path[1])){
+                    $params = explode('&',$path[1]);
+                    foreach ($params as $key => $value){
+                        $pattern = '/^iframe=(.*?)$/i';
+                        if (preg_match($pattern,$value)){
+                            unset($params[$key]);
+                            break;
+                        }
+                    }
+                    $path[1] = 'iframe=true'.implode('&',$params);
+                }
+                $url = implode('?',$path);
+            }else{
+                $suffix = config('template.view_suffix');
+                if (!empty($suffix) && stristr($url,$suffix) !== false){
+                    $url = $url.'?iframe=true';
+                }else{
+                    $url = $url.$suffix.'?iframe=true';
+                }
+            }
+            $this->assign('DEFAULT_URL',$url);
             $this->view->engine->layout('common@layouts/index');
         }else{
             $this->view->engine->layout('common@layouts/main');
@@ -56,6 +82,42 @@ class BaseController extends Controller
     {
         // 获取当前访问地址
         return strtolower(request()->module() . '/' . request()->controller() . '/' . request()->action());
+    }
+
+    /**
+     * @description 获取默认路由
+     * @return string
+     */
+    public function getHomeUrl()
+    {
+        // 获取默认路由
+        return strtolower(config('default_module').'/'.config('default_controller').'/'.config('default_action'));
+    }
+
+    /**
+     * @description 当前请求完整URL
+     * @return string
+     */
+    public function getUrl()
+    {
+        $url = request()->url();
+        return $url;
+    }
+
+    /**
+     * 渲染模板输出
+     * @param string    $template 模板文件
+     * @param array     $vars 模板变量
+     * @param array     $replace 模板替换
+     * @param integer   $code 状态码
+     * @param array  $header
+     * @param array  $options 输出参数
+     * @return \think\response\View
+     */
+    public function view($template = '', $vars = [], $replace = [], $code = 200,$header = [], $options = [])
+    {
+        $view = new View($template, $code, $header, $options);
+        return $view->replace($replace)->assign($vars);
     }
 
     /**
@@ -343,7 +405,7 @@ class BaseController extends Controller
      */
     public function goHome()
     {
-        $this->redirect(config('default_module').'/'.config('default_controller').'/'.config('default_action'));
+        $this->redirect($this->getHomeUrl());
     }
 
     /**
@@ -402,7 +464,7 @@ class BaseController extends Controller
             return $backUrl[$index-1];
         }
 
-        return config('default_module').'/'.config('default_controller').'/'.config('default_action');
+        return $this->getHomeUrl();
     }
 
     /**

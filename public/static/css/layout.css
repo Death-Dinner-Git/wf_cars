@@ -316,6 +316,18 @@ a:hover, a:focus {
 }
 .logo{display:block;position: absolute; left: 10px; top: 10px;}
 .logo img{width: 50px; height: 50px;}
+#dinner-side-logo{
+	position:absolute;
+	z-index: 19940201;
+	top: 0px;
+	left: 0px;
+	width: 150px;
+	height: 50px;
+}
+#dinner-side-logo .logo img{
+	width: 150px;
+	height: 50px;
+}
 .dinner-logo-title{display:block;position: absolute; left: 70px; top: 10px;}
 .dinner-logo-title span{display:inline-block;min-width:100px;height: 50px;line-height: 50px;font-size: 30px;text-align: center; vertical-align: middle;}
 .dinner-logo-title span:hover{color: #f4f4f4;}
@@ -324,14 +336,41 @@ a:hover, a:focus {
 		margin-left: 300px;
 	}
 }
+@media screen and (max-width: 1600px) {
+	.header-theme-one .dinner-logo-box{
+		margin-left: 310px;
+	}
+}
+@media screen and (max-width: 1500px) {
+	.header-theme-one .dinner-logo-box{
+		margin-left: 320px;
+	}
+	.dinner-logo-title{
+		left: 320px;
+	}
+}
 @media screen and (max-width: 1400px) {
 	.header-theme-one .dinner-logo-box{
 		margin-left: 320px;
+	}
+	.dinner-logo-title{
+		left: 320px;
+	}
+}
+@media screen and (max-width: 1200px) {
+	.header-theme-one .dinner-logo-box{
+		margin-left: 330px;
+	}
+	.dinner-logo-title{
+		left: 330px;
 	}
 }
 @media screen and (max-width: 1000px) {
 	.header-theme-one .dinner-logo-box{
 		margin-left: 340px;
+	}
+	.dinner-logo-title{
+		left: 340px;
 	}
 }
 .header .layui-nav{position: absolute; right: 0; top: 0; padding: 0; background: none;}
@@ -358,18 +397,6 @@ a:hover, a:focus {
 	height: 40px;
 	background-color: #1AA094;
 	top: 15px;
-}
-#dinner-side-logo{
-	position:absolute;
-	z-index: 19940201;
-	top: 0px;
-	left: 0px;
-	width: 150px;
-	height: 50px;
-}
-#dinner-side-logo .logo img{
-	width: 150px;
-	height: 50px;
 }
 .dinner-side-toggle i:before,.dinner-side-full i:before{
 	text-align: center;
@@ -418,7 +445,7 @@ a:hover, a:focus {
 
 }
 .layui-dinner-menu ul.layui-nav .layui-this::after{
-	 /*background: #2B2E37; */
+	/*background: #2B2E37; */
 	background: #1AA094;
 }
 
@@ -1084,4 +1111,14 @@ body .site-theme-one-nav .layui-nav-item{line-height: 40px}
 
 	.dinner-side-toggle ,.dinner-header-item{display: none;}
 	.dinner-header-item-mobile{ display: block; }
+}
+
+
+/* 适配多设备 */
+@media screen and (max-width: 628px) {
+
+}
+
+/* 适配多设备 */
+@media screen and (max-width: 520px) {
 }

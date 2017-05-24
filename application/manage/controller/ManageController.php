@@ -13,6 +13,7 @@
 namespace app\manage\controller;
 
 use app\common\controller\BaseController;
+use think\view\driver\Think;
 
 class ManageController extends BaseController
 {

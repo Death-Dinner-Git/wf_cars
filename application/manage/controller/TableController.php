@@ -24,7 +24,7 @@ class TableController extends ManageController
     public function indexAction()
     {
         // 临时却换当前模板的布局功能
-        $this->view->engine->layout('layouts/main');
+        $this->view->engine->layout('common@layouts/main');
 
         $this->assign('meta_title', "维护列表");
         return view('table/outCarListAdd');

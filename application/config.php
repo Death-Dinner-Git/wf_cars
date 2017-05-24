@@ -148,6 +148,7 @@ return [
         '_PLUGINS_'=>'/static/plugins',
         '_SHORTCUT_'=>'/static/images/shortcut-icon-logo.png',
     ],
+
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => THINK_PATH . 'tpl' . DS . 'dispatch_jump.tpl',
     'dispatch_error_tmpl'    => THINK_PATH . 'tpl' . DS . 'dispatch_jump.tpl',

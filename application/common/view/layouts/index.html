@@ -64,16 +64,9 @@
             <!-- 右侧主体内容开启 -->
             <div class="layui-body" id="dinner-body" style="bottom: 0;border-left: solid 2px #1AA094;">
                 <div class="layui-tab layui-tab-card dinner-tab-box" id="dinner-tab" lay-filter="switch-tab" lay-allowclose="true" lay-separator=" | ">
-                    <ul class="layui-tab-title">
-                        <li class="layui-this"  id="dinner-home">
-                            <i class="fa fa-dashboard" aria-hidden="true"></i>
-                            <cite>控制面板</cite>
-                        </li>
+                    <ul class="layui-tab-title" data-url="/manage/index/home.html?iframe=true"  data-icon="fa fa-circle-o" data-title="控制面板">
                     </ul>
-                    <div class="layui-tab-content" style="min-height: 800px; ">
-                        <div class="layui-tab-item layui-show">
-                            <iframe class="dinner-iframe" data-id='0' frameborder="0" scrolling="no" src=""></iframe>
-                        </div>
+                    <div class="layui-tab-content">
                     </div>
                 </div>
             </div>
@@ -136,23 +129,23 @@
             layer = layui.layer,
             util = layui.util;
 
-        //回到顶部
-        //使用内部工具组件
-        util.fixbar({
-            top: true,
-            // bar1: true,
-            bar2: true,
-            css: {right: 15, bottom: 55},
-            click: function(type){
-                if(type === 'bar1'){
-                    layer.msg('工具一');
-                }else if (type === 'bar2'){
-                    layer.msg('工具二');
-                }else if (type === 'top'){
-                    layer.msg('返回顶层');
-                }
-            }
-        });
+//        //回到顶部
+//        //使用内部工具组件
+//        util.fixbar({
+//            top: true,
+//            // bar1: true,
+//            bar2: true,
+//            css: {right: 15, bottom: 55},
+//            click: function(type){
+//                if(type === 'bar1'){
+//                    layer.msg('工具一');
+//                }else if (type === 'bar2'){
+//                    layer.msg('工具二');
+//                }else if (type === 'top'){
+//                    layer.msg('返回顶层');
+//                }
+//            }
+//        });
 
     });
 </script>
