@@ -16,7 +16,7 @@ return [
     'hostname'        => '127.0.0.1',
 //    'hostname'        => '114.55.42.152',
     // 数据库名
-    'database'        => 'wf_cars',
+    'database'        => 'wofangtaxi',
 //    'database'        => 'wofangtaxi',
     // 用户名
     'username'        => 'root',
