@@ -28,7 +28,7 @@
 
                 <label class="layui-form-label">真实姓名:</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="{$key}" name="key" placeholder="真实姓名" class="layui-input">
+                    <input type="text" value="{$param.username}" name="username" placeholder="真实姓名" class="layui-input">
                 </div>
 
                 {if condition="$super !== 'true'"}
@@ -37,12 +37,11 @@
                     <select name="type" lay-search >
                         <option value="0">全部</option>
                         {volist name="typeList" id="item"}
-                        <!--<option value="{$key}" {in name="key" value="$type"}selected{/in}>{$item}</option>-->
-                        <option value="{$key}" {if condition="$key eq $type"}selected{/if}>{$item}</option>
+                        <option value="{$key}" {if condition="$key eq $param.type"}selected{/if}>{$item}</option>
                         {/volist}
                     </select>
                 </div>
-                {else}<input type="hidden" value="{$type}" name="type"><input type="hidden" value="true" name="super">
+                {else}<input type="hidden" value="$param.type" name="type"><input type="hidden" value="true" name="super">
                 {/if}
 
                 <button class="layui-btn" lay-submit="">查询</button>

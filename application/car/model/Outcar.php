@@ -17,7 +17,15 @@ class OutCar extends Model{
 	* @return array
 	**/
 	public function lists($pageNumber,$totalNumber,$where){
-		$lists = OutCar::where($where)->page($pageNumber,$totalNumber)->alias('a')->join('wf_take_car_order b','a.take_car_order_id = b.id')->join('wf_manager c','b.manager_id = c.id')->join('wf_building_base d','b.building_base_id = d.id')->join('wf_department e','b.department_id = e.id')->join('wf_driver f','b.driver_id = f.id')->join('wf_car g','b.car_id = g.id')->field('a.*,a.id as outid,b.*,b.id as orderid,c.*,c.id as managerid,c.real_name as manager_name,d.*,d.id as buildid,d.name as build_name,e.*,e.id as departid,e.name as department_name,f.*,f.id as driverid,f.real_name as driver_name,g.*')->order('a.create_time desc')->select();
+		$lists = OutCar::where($where)->page($pageNumber,$totalNumber)->alias('a')
+            ->join('wf_take_car_order b','a.take_car_order_id = b.id')
+            ->join('wf_manager c','b.manager_id = c.id')
+            ->join('wf_building_base d','b.building_base_id = d.id')
+            ->join('wf_department e','b.department_id = e.id')
+            ->join('wf_driver f','b.driver_id = f.id')
+            ->join('wf_car g','b.car_id = g.id')
+            ->field('a.*,a.id as outid,b.*,b.id as orderid,c.*,c.id as managerid,c.real_name as manager_name,d.*,d.id as buildid,d.name as build_name,e.*,e.id as departid,e.name as department_name,f.*,f.id as driverid,f.real_name as driver_name,g.*')
+            ->order('a.create_time desc')->select();
 
 		foreach($lists as $key=>$value){
 			$value['order_status_cn'] = $this->orderStatus($value['order_status']);
@@ -105,7 +113,7 @@ class OutCar extends Model{
 			//take_car_order
 			$carData[$key]['carToOrder'] = $this->_carToOrder($value['id']);
 			//管理员名字
-			$carData[$key]['real_name'] = Loader::model('Manager')::where('id',$carData[$key]['carToOrder']['manager_id'])->value('real_name');
+			$carData[$key]['real_name'] = Loader::model('Manager')->where('id',$carData[$key]['carToOrder']['manager_id'])->value('real_name');
 
 			//当前未派单的经度
 			$carData[$key]['out_lat'] = $location['start_lat'];

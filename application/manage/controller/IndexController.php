@@ -13,7 +13,9 @@
 namespace app\manage\controller;
 
 use app\manage\controller\ManageController;
+use app\manage\model\Manager;
 use app\manage\model\User;
+use think\Loader;
 
 /**
  * 后台默认控制器
@@ -27,7 +29,6 @@ class IndexController extends ManageController
      */
     public function indexAction()
     {
-
         // 模板赋值
         $this->assign('meta_title', "出车系统");
         return view('index');

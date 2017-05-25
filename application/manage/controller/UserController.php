@@ -59,21 +59,23 @@ class UserController extends ManageController
      * @description 清单
      * @param bool $super
      * @param integer $pageNumber
+     * @param null|string $username
+     * @param null|string $type
      * @return string
      */
-    public function listAction($super = false,$pageNumber = 1)
+    public function listAction($super = false,$pageNumber = 1,$username = null, $type = null)
     {
         $where = [];
         $each = 10;
-        $key = '';
-        $type = '';
-        if (request()->request('key')){
-            $key = trim(request()->request('key'));
-            $where =  array_merge($where, ['real_name'=>$key]);
+        $param = ['username'=>'','type'=>''];
+        if ($username && $username != ''){
+            $param['username'] = trim($username);
+            $where =  array_merge($where, ['real_name'=>$username]);
         }
         $typeList = Manager::getManagerList();
-        if ($super == 'true' || request()->request('type')){
-            $type = $super == 'true' ? 'supperAdmin' :request()->request('type');
+        if ($super == 'true' || ($type && $type != '')){
+            $param['type'] = trim($type);
+            $type = ($super == 'true' ? 'supperAdmin' : trim($type));
             if (in_array($type,array_keys($typeList))){
                 $where =  array_merge($where, ['manager_type'=>$type]);
             }
@@ -85,8 +87,7 @@ class UserController extends ManageController
         $this->assign('dataProvider', $dataProvider);
         $this->assign('indexOffset', (($pageNumber-1)*$each));
         $this->assign('count', $count);
-        $this->assign('key', $key);
-        $this->assign('type', $type);
+        $this->assign('param', $param);
         $this->assign('typeList', $typeList);
         $this->assign('super', $super);
         return view('user/list');
