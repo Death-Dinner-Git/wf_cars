@@ -1,8 +1,6 @@
-
 <style type="text/css">
  #allmap {width: 100%;height: 100%;}
 </style>
-
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=6g0xlY8ISU77UsnVp7EgIt3mV54k6Gmz"></script>
 
 <script type="text/javascript" src="__JS__/Validform_v5.3.2.js"></script>
@@ -73,11 +71,11 @@ $(function(){
 	}
 	var endLat =  $("#endLat").val();
 	var endtLng =  $("#endLng").val();
-
-	var ordercarid =  $("#ordercarid").val();
+	var outcarid =  $("#outcarid").val();
+	var startCityName =  $("#startCityName").val();
+	var endCityName =  $("#endCityName").val();
 	
-
-	$.post("{:url('lookbuild')}",{cityid:cityid,citycar:citycar,drivercityid:drivercityid,citydriver:citydriver,managerId:managerId,buildingId:buildingId,start_address:start_address,startaddress:startaddress,startLat:startLat,startLng:startLng,end_address:end_address,endaddress:endaddress,endLat:endLat,endtLng:endtLng,ordercarid:ordercarid},function(data){
+	$.post("{:url('lookbuild')}",{cityid:cityid,citycar:citycar,drivercityid:drivercityid,citydriver:citydriver,managerId:managerId,buildingId:buildingId,start_address:start_address,startaddress:startaddress,startLat:startLat,startLng:startLng,end_address:end_address,endaddress:endaddress,endLat:endLat,endtLng:endtLng,id:outcarid,startCityName:startCityName,endCityName:endCityName},function(data){
 		if(data.code==200){
 			alertMessage(data.message,6,'',6);
 			location.href(data.data);
@@ -89,21 +87,11 @@ $(function(){
 	
 	});
 });
-
-
-function writeObj(obj){ 
- var description = ""; 
- for(var i in obj){ 
- var property=obj[i]; 
- description+=i+" = "+property+"\n"; 
- } 
- alert(description); 
-} 
-
 </script>
 
 
 <form id="paiCar" class="layui-form layui-form-pane">
+	<input name="id" id="outcarid" value="{$OutDetail.outid}" type="hidden">
 	<div class="layui-form-item">
     <label class="layui-form-label">车辆</label>
     <div class="layui-input-inline">
@@ -127,7 +115,7 @@ function writeObj(obj){
       <select name="drivercityid" lay-filter="driver" id="drivercityid" lay-search>
         <option value="">请选择城市</option>
 		{volist name="city" id="vo"}
-			<option value="{$vo.wofang_id}">{$vo.name}</option>
+			<option value="{$vo.id}">{$vo.name}</option>
 		{/volist}		
       </select>
     </div>
@@ -168,9 +156,9 @@ function writeObj(obj){
 		<input type="text"  class="layui-input" id="suggestId" placeholder="{$OutDetail.start_address}">
 		
 		<input name="start_address" id="start_address" value="{$OutDetail.start_address}" type="hidden">
-		<input name="startLat" id="startLat" value="" type="hidden">
-		<input name="startLng" id="startLng" value="" type="hidden">
-		<input name="startCityName" id="startCityName" value="" type="hidden">
+		<input name="startLat" id="startLat" value="{$OutDetail.start_lat}" type="hidden">
+		<input name="startLng" id="startLng" value="{$OutDetail.start_lng}" type="hidden">
+		<input name="startCityName" id="startCityName" value="{$OutDetail.startcityname}" type="hidden">
 		<input name="startaddress" id="startaddress" value="" type="hidden">
 
 		<div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
@@ -180,12 +168,12 @@ function writeObj(obj){
 	<div class="layui-form-item">
 	<label class="layui-form-label">目的地址:</label>
 	<div class="layui-input-inline">
-		<input type="text"   class="layui-input" id="suggestId2" placeholder="{$takeOrderCarDetail.end_address}">
+		<input type="text"   class="layui-input" id="suggestId2" placeholder="{$OutDetail.address}">
 
-		<input name="end_address" id="end_address" value="{$takeOrderCarDetail.end_address}" type="hidden">
-		<input name="endLat" id="endLat" value="" type="hidden">
-		<input name="endLng" id="endLng" value="" type="hidden">
-		<input name="endCityName" id="endCityName" value="" type="hidden">
+		<input name="end_address" id="end_address" value="{$OutDetail.address}" type="hidden">
+		<input name="endLat" id="endLat" value="{$OutDetail.lat}" type="hidden">
+		<input name="endLng" id="endLng" value="{$OutDetail.lng}" type="hidden">
+		<input name="endCityName" id="endCityName" value="{$OutDetail.endcityname}" type="hidden">
 		<input name="endaddress" id="endaddress" value="" type="hidden">
 
 		<div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
@@ -198,7 +186,6 @@ function writeObj(obj){
 
 
 	<div class="layui-form-item" style="text-align: center;">
-	<input name="ordercarid" id="ordercarid" value="{$takeOrderCarDetail.id}" type="hidden">
 	 <a class="layui-btn" id="save">派车</a>
 	</div>
 
@@ -208,7 +195,6 @@ function writeObj(obj){
 <script>
 layui.use('form', function(){
 	var form = layui.form();
-	alert('sdddd');
 	form.on('select(car)', function(data){
 	 $.post("{:url('chooseCar')}",{id:data.value},function(data){
 		var html='';
@@ -251,9 +237,9 @@ layui.use('form', function(){
 
 // 百度地图API功能
 var map = new BMap.Map("allmap");
-map.centerAndZoom(new BMap.Point({$takeOrderCarDetail.start_lng},{$takeOrderCarDetail.start_lat}), 10);
-var p1 = new BMap.Point({$takeOrderCarDetail.start_lng},{$takeOrderCarDetail.start_lat});
-var p2 = new BMap.Point({$takeOrderCarDetail.end_lng},{$takeOrderCarDetail.end_lat});
+map.centerAndZoom(new BMap.Point({$OutDetail.start_lng},{$OutDetail.start_lat}), 10);
+var p1 = new BMap.Point({$OutDetail.start_lng},{$OutDetail.start_lat});
+var p2 = new BMap.Point({$OutDetail.lng},{$OutDetail.lat});
 var driving = new BMap.DrivingRoute(map, {renderOptions:{map: map, autoViewport: true}});
 route(p1,p2);
 function G(id) {
@@ -263,7 +249,7 @@ var ac_start = new BMap.Autocomplete(    //建立一个自动完成的对象1
 	{"input" : "suggestId"
 	,"location" : map
 });
-var ac_end = new BMap.Autocomplete(    
+var ac_end = new BMap.Autocomplete(
 	{"input" : "suggestId2"
 	,"location" : map
 });

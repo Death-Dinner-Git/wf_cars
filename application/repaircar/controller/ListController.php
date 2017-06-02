@@ -60,20 +60,6 @@ class ListController extends BaseController
             $where['RepairCar.end_time'] = array('elt',$key);
             $end_time = $key;
         }
-//        if(Request::instance()->isGet()){
-//            if(!empty($_GET['numberPlate'])){
-//                $where['Car.number_plate'] = $_GET['numberPlate'];
-//            }
-//            if(!empty($_GET['cityId'])){
-//                $where['City.id'] = $_GET['cityId'];
-//            }
-//            if(!empty($_GET['create_time_start'])){
-//                $where['RepairCar.start_time'] = array('egt',$_GET['create_time_start']);
-//            }
-//            if(!empty($_GET['create_time_end'])){
-//                $where['RepairCar.end_time'] = array('elt',$_GET['create_time_end']);
-//            }
-//        }
         //取得车辆维护管理列表
         $this->repairCarList = Db::view('RepairCar',"id,start_time,end_time,fee,project,reason,repairType,shop_name")
             ->view('City',['name'=>'cityName'],'City.id=RepairCar.city_id')
@@ -125,16 +111,7 @@ class ListController extends BaseController
      * 添加车辆维护
      */
     public function addAction(){
-        //车辆维护列表
-        $repairCarList = Loader::model('RepairCar')->lists();
-        $this->assign('repairCarData',$repairCarList);
-        //管理员列表
-        $managerList = Loader::model('Manager')->lists();
-        $this->assign('managerData',$managerList);
-        //城市列表
-        $cityList = Loader::model('City')->lists();
-        $this->assign('cityData',$cityList);
-        if(Request::instance()->isPost()){
+        if(Request::instance()->isAjax()){
             $data = Request::instance()->param();
             $data['create_time'] = date('Y-m-d H:i:s');
             $data['update_time'] = date('Y-m-d H:i:s');
@@ -157,6 +134,15 @@ class ListController extends BaseController
             $carList[0]['number_plate'] = "选择车辆";
             $this->assign('carData',$carList);
         }
+        //车辆维护列表
+        $repairCarList = Loader::model('RepairCar')->lists();
+        $this->assign('repairCarData',$repairCarList);
+        //管理员列表
+        $managerList = Loader::model('Manager')->lists();
+        $this->assign('managerData',$managerList);
+        //城市列表
+        $cityList = Loader::model('City')->lists();
+        $this->assign('cityData',$cityList);
         return $this->fetch("list/repairCarListAdd");
     }
 
@@ -237,16 +223,15 @@ class ListController extends BaseController
      * 删除维护列表
      * return array
      **/
-    public function deleteAction(){
-        return '哈哈';
-//        if(Request::instance()->isAjax()){
-//            $id = Request::instance()->param('id');
-//            $result = self::$_currentModel->delOut($id);
-//            if($result){
-//                return json(['data'=>$result,'code'=>200,'message'=>'删除成功']);
-//            }else{
-//                return json(['data'=>null,'code'=>404,'message'=>'删除失败']);
-//            }
-//        }
+    public function deleteDataAction($id=0){
+        if(Request::instance()->isAjax()){
+            $id = Request::instance()->param('id');
+            $result = self::$_currentModel->destroy(['id'=>$id]);
+            if($result){
+                return json(['data'=>url('list'),'code'=>200,'message'=>'删除成功']);
+            }else{
+                return json(['data'=>null,'code'=>404,'message'=>'删除失败']);
+            }
+        }
     }
 }

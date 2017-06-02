@@ -8,7 +8,7 @@
 	<div id="allmap"></div>
 </div>
 
-<table class="layui-table" lay-skin="row" lay-even="">
+<table class="layui-table dinner-table" lay-skin="row" lay-even="">
     <thead>
     <tr>
         <th>用车人</th>
@@ -45,6 +45,10 @@
         });
     };	
 
+	var map = new BMap.Map("allmap");
+	var point = new BMap.Point({$start_lng},{$start_lat});
+	map.centerAndZoom(point, 15);
+
 	$(function(){
 		refreshCarLocal();
 		//setInterval(refreshCarLocal, 2000);
@@ -54,10 +58,6 @@
 		$.post("{:url('nearcarsAjax')}",{id:{$id}},function(data){
 			var html='';
 			if(data.code==200){
-				var map = new BMap.Map("allmap");
-				var point = new BMap.Point({$start_lng},{$start_lat});
-				map.centerAndZoom(point, 15);
-
 				for(var i in data.data){
 					var pt = new BMap.Point(data.data[i].lng,data.data[i].lat);
 					var myIcon = new BMap.Icon("http://developer.baidu.com/map/jsdemo/img/car.png", new BMap.Size(300,157));
@@ -86,26 +86,26 @@
 				 }
 				 $("#item").empty();
 				 $('#item').append(html);
-
 			}else{
-				alertMessage(data.message,5,'',6);
+				html+="<tr><td colspan='11'>暂时没有数据</td></tr>";
+				$("#item").empty();
+				$('#item').append(html);
+				//alertMessage(data.message,5,'',6);
 			}
-
-
 		},"json");
 	}
 
-function paiche(node,id,carId,driverId,lat,lng){
-	if(driverId==0){
-		alertMessage('请进入安排派车选择司机',5,'',6);
-		return;
-	}
-	$.post("{:url('paiche')}",{id:id,carid:carId,driverid:driverId},function(data){
-		if(data.code==200){
-			alertMessage(data.message,6,'',6);
-		}else{
-			alertMessage(data.message,5,'',6);
+	function paiche(node,id,carId,driverId,lat,lng){
+		if(driverId==0){
+			alertMessage('请进入安排派车选择司机',5,'',6);
+			return;
 		}
-	})
-}
+		$.post("{:url('paiche')}",{id:id,carid:carId,driverid:driverId},function(data){
+			if(data.code==200){
+				alertMessage(data.message,6,'',6);
+			}else{
+				alertMessage(data.message,5,'',6);
+			}
+		})
+	}
 </script>

@@ -12,6 +12,7 @@
         <div class="layui-input-inline">
             <select name="driverId">
                 <option value="">请选择司机</option>
+				<option value="">不限</option>
 				{volist name="driver" id="vo"}
                  <option value="{$vo.id}" {eq name="vo.id" value="$front.driverId"}selected{/eq} >{$vo.real_name}</option>
 				{/volist}
@@ -21,6 +22,7 @@
         <div class="layui-input-inline">
             <select name="departmentid" lay-search>
                 <option value="">请选择部门</option>
+				<option value="">不限</option>
 				{volist name="department" id="vo"}
 					<option value="{$vo.id}" {eq name="vo.id" value="$front.departmentid"}selected{/eq} >{$vo.name}</option>
 				{/volist}
@@ -30,6 +32,7 @@
         <div class="layui-input-inline">
             <select name="orderstatus">
                 <option value="">请选择状态</option>
+				<option value="">不限</option>
 				 <option value="ordered" {eq name="$front.orderstatus" value="ordered"}selected{/eq}>抢单中</option>
 				 <option value="success" {eq name="$front.orderstatus" value="success"}selected{/eq}>成功匹配</option>
 				 <option value="drivering" {eq name="$front.orderstatus" value="drivering"}selected{/eq}>订单进行中</option>
@@ -41,6 +44,7 @@
         <div class="layui-input-inline">
             <select name="ordertype">
 				 <option value="">请选择状态</option>
+				 <option value="">不限</option>
 				 <option value="come" {eq name="$front.ordertype" value="come"}selected{/eq}>去程</option>
 				 <option value="back" {eq name="$front.ordertype" value="back"}selected{/eq}>返程</option>
             </select>
@@ -61,7 +65,7 @@
     </div>
 </form>
 
-<table class="layui-table" lay-skin="row" lay-even="">
+<table class="layui-table dinner-table" lay-skin="row" lay-even="">
     <thead>
     <tr>
         <th>订单编号</th>
@@ -77,17 +81,22 @@
     </tr>
     </thead>
     <tbody>
-	{volist name="TakeCarOrderList" id="vo" key="key" empty="暂时没有数据"}
+	{volist name="TakeCarOrderList" id="vo" key="key" empty="$empty"}
 			<tr data-key="{$key}">
 				<td style="width: 100px;">
 					{$vo.order_num}
 				</td>
 				<td style="width: 100px;">
-					{$vo.order_type_cn}
+					{eq name="vo.order_type" value="come"}
+					去程
+					{/eq}
+					{eq name="vo.order_type" value="back"}
+					回程
+					{/eq}
 				</td>
 				<td style="width: 150px;">
-					部门：{$vo.dep_name}<br/>
-					业务员：{$vo.mang_name}
+					部门：{$vo.department_name}<br/>
+					业务员：{$vo.manager_name}
 				</td>
 				<td style="width: 100px;">
 					{$vo.build_name}
@@ -99,39 +108,51 @@
 					{$vo.driver_mileage}
 				</td>
 				<td style="width: 100px;">
-					{$vo.start_time}
+					{$vo.booking_time}
 				</td>
 				<td style="width: 100px;">
-					{$vo.order_status_cn}
-				</td>
-				<td style="width: 100px;">
-					{$vo.order_type_cn}
-				</td>
-				<td style="width: 100px;text-align:center;">
-
-					{eq name="vo.order_status" value="drivering"}
-						<a href="javascript:void(0);">
-						  <a  href="{:url('Showrecord',array('id'=>$vo['id']))}?iframe=true" class="layui-btn layui-btn-mini">
-						   <i class="fa fa-search"></i>查看实时记录
-						 </a>
-						</a>
+					{eq name="vo.order_status" value="waitOrder"}
+					抢单中
+					{/eq}	
+					{eq name="vo.order_status" value="ordered"}
+					成功匹配
 					{/eq}
-					{eq name="vo.order_status" value="success"}
-						<a href="javascript:void(0);">
-						  <a  href="{:url('Showrecord',array('id'=>$vo['id']))}?iframe=true" class="layui-btn layui-btn-mini">
-						   <i class="fa fa-search"></i>查看实时记录
-						 </a>
-						</a>
+					{eq name="vo.order_status" value="drivering"}
+					订单进行中
 					{/eq}
 					{eq name="vo.order_status" value="over"}
+					订单完成
+					{/eq}
+					{eq name="vo.order_status" value="cancel"}
+					行程取消
+					{/eq}
+				</td>
+				<td style="width: 100px;">
+					{eq name="vo.driverstatus" value="come"}
+					去程
+					{/eq}
+					{eq name="vo.driverstatus" value="back"}
+					回程
+					{/eq}
+					{eq name="vo.driverstatus" value=""}
+					 已还车
+					{/eq}
+				</td>
+				<td style="width: 100px;text-align:center;">
+					{if condition=" ($vo.order_status eq 'ordered') or ($vo.order_status eq 'drivering') "}
 						<a href="javascript:void(0);">
-						  <a  href="{:url('Showrecord',array('id'=>$vo['id']))}?iframe=true" class="layui-btn layui-btn-mini">
+						  <a  href="{:url('Showrecord',array('id'=>$vo['orderid']))}?iframe=true" class="layui-btn layui-btn-mini">
+						   <i class="fa fa-search"></i>查看实时记录
+						 </a>
+						</a>
+					{/if}
+					{if condition=" $vo.order_status eq 'over' "}
+						<a href="javascript:void(0);">
+						  <a  href="{:url('Showrecord',array('id'=>$vo['orderid']))}?iframe=true" class="layui-btn layui-btn-mini">
 						   <i class="fa fa-search"></i>查看行驶记录
 						 </a>
 						</a>
-					{/eq}
-
-
+					{/if}
 				</td>
 			</tr>
 	{/volist}

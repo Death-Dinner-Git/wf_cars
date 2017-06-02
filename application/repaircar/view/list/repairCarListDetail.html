@@ -166,7 +166,7 @@
                 return false;
             }
             var fee = $("#fee").val();
-            if(fee==''){
+            if(isNaN(fee)){
                 alertMessage('费用请输入数字',5,'',6);
                 return false;
             }

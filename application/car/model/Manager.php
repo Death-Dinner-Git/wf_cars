@@ -11,7 +11,7 @@ class Manager extends Model{
 
 	protected $autoWriteTimestamp = 'datetime';//自动写入
 	protected $dateFormat = 'Y-m-d H:i:s';//自动格式输出
-	protected $resultSetType = 'collection';
+
 	
 	/**
 	* @销售顾问列表(分页)

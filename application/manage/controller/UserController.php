@@ -14,6 +14,7 @@ namespace app\manage\controller;
 
 
 use app\manage\controller\ManageController;
+use app\manage\model\Identity;
 use app\manage\model\User;
 use app\manage\model\BaseUser;
 use app\manage\model\Manager;
@@ -32,7 +33,8 @@ class UserController extends ManageController
     public function indexAction()
     {
         $this->assign('meta_title', "个人信息");
-        return view('user/index');
+        $model = Identity::load()->where(['id'=>4])->find();
+        return view('user/index',['model'=>$model]);
     }
 
     /**
@@ -51,8 +53,8 @@ class UserController extends ManageController
      */
     public function resetPasswordAction()
     {
-        $this->assign('meta_title', "安排出车界面");
-        return view('user/list');
+        $this->assign('meta_title', "修改密码");
+        return view('user/reset');
     }
 
     /**
@@ -65,12 +67,12 @@ class UserController extends ManageController
      */
     public function listAction($super = false,$pageNumber = 1,$username = null, $type = null)
     {
-        $where = [];
+        $where = ['is_delete'=>'1'];
         $each = 10;
         $param = ['username'=>'','type'=>''];
         if ($username && $username != ''){
             $param['username'] = trim($username);
-            $where =  array_merge($where, ['real_name'=>$username]);
+            $where =  array_merge($where, ['real_name'=>['like','%'.$username.'%']]);
         }
         $typeList = Manager::getManagerList();
         if ($super == 'true' || ($type && $type != '')){
@@ -82,6 +84,7 @@ class UserController extends ManageController
         }
         $dataProvider = Manager::load()->where($where)->page($pageNumber,$each)->select();
         $count = Manager::load()->where($where)->count();
+
         $this->assign('meta_title', "账号管理");
         $this->assign('pages', ceil(($count)/$each));
         $this->assign('dataProvider', $dataProvider);
@@ -101,7 +104,7 @@ class UserController extends ManageController
      */
     public function updateAction($id,$target = null)
     {
-        $model = Manager::get($id);
+        $model = Manager::load()->where(['id'=>$id])->where(['is_delete'=>'1'])->find();
         if (request()->isAjax()){
             foreach ($_REQUEST as $k=>$value){
                 $_REQUEST[$k] = trim($value);
@@ -183,6 +186,13 @@ class UserController extends ManageController
      */
     public function deleteAction($id = 0)
     {
-        return json(['code'=>1,'msg'=>'删除成功','delete_id'=>$id]);
+        $ret = ['code'=>0,'msg'=>'删除失败','delete_id'=>$id];
+        if ($this->getRequest()->isAjax()){
+            $result = Manager::update(['is_delete'=>'0'],['id'=>$id]);
+            if ($result){
+                $ret = ['code'=>1,'msg'=>'删除成功','delete_id'=>$id];
+            }
+        }
+        return json($ret);
     }
 }

@@ -96,7 +96,7 @@
         <td>{$vo.real_name}</td>
         <td style="width: 150px;text-align: center;">
             <a href="javascript:void(0);"><button onclick="showUrl('编辑','detail?id={$vo.id}','70%','80%','2')" class="layui-btn layui-btn-mini"><i class="fa fa-search"></i>编辑</button></a>
-            <a href="javascript:void(0);"><button  class="layui-btn layui-btn-mini" onclick="deleter({$vo.id})" ><i class="fa fa-search"></i>删除</button></a>
+            <a href="javascript:void(0);"><button  class="layui-btn layui-btn-mini" onclick="showDialog('信息确认','确定要删除此项吗？',function(){deleter({$vo.id});})" ><i class="fa fa-search"></i>删除</button></a>
         </td>
     </tr>
     {/volist}
@@ -108,6 +108,15 @@
     layui.use([ 'laydate', 'form'], function() {});
 </script>
 <script>
+    var alertMessage = function (msg) {
+        layui.use(['layer'],function () {
+            layer.msg(msg, {
+                icon: 5,
+                time: 20000,
+                shift: 6
+            });
+        });
+    };
     $(function() {
         layui.use(['laypage', 'layer'], function(){
             var laypage = layui.laypage,
@@ -142,7 +151,14 @@
     });
     //删除
     function deleter(id){
-        alert(id);
+            $.post("{:url('deleteData')}", {id: id}, function (data) {
+                if (data.code == 200) {
+                    alertMessage(data.message);
+                    window.location.href = data.data;
+                } else {
+                    alertMessage(data.message);
+                }
+            }, "json");
     }
 </script>
 

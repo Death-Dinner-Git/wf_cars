@@ -3,17 +3,13 @@
 <head>
     <meta charset="utf-8">
     <title>表格</title>
-    <!--<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">-->
-    <!--<script type="text/javascript" src="__JS__/jquery.js"></script>-->
-    <!--<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=6g0xlY8ISU77UsnVp7EgIt3mV54k6Gmz"></script>-->
-    <!--<script type="text/javascript" src="__JS__/Validform_v5.3.2.js"></script>-->
 </head>
 <body>
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=6g0xlY8ISU77UsnVp7EgIt3mV54k6Gmz"></script>
 <script type="text/javascript" src="__JS__/Validform_v5.3.2.js"></script>
 <section id="content-container" style="display:flex; position:fixed;top: 0px;left: 0px;right: 0px;bottom: 0px;">
     <div id="content-body" style="margin:auto;width: 800px;height: 600px;">
-        <form class="layui-form layui-form-pane" action="{:url('add')}" method="post">
+        <form class="layui-form layui-form-pane">
             <div class="layui-form-item">
                 <label class="layui-form-label">维护车辆:</label>
                 <div class="layui-input-inline">
@@ -27,10 +23,6 @@
                 <div class="layui-input-inline">
                     <select name="car_id" id="citycar">
                         <option value="">选择车辆</option>
-                        <!--{volist name='carData' id='carList' key='key'}-->
-                        <!--<option value="{carList.id}">{$carList.number_plate}</option>-->
-                        <!--{/volist}-->
-
                     </select>
                 </div>
 
@@ -40,7 +32,7 @@
 
                 <label class="layui-form-label">维护类型</label>
                 <div class="layui-input-inline">
-                    <select name="repairType">
+                    <select name="repairType" id="repairType">
                         <option value="regular">定期维护</option>
                     </select>
                 </div>
@@ -51,7 +43,7 @@
 
                 <label class="layui-form-label">维护费用</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="" name="fee" placeholder="维护费用" class="layui-input">
+                    <input type="text" value="" name="fee" id="fee" placeholder="维护费用" class="layui-input">
                 </div>
 
             </div>
@@ -60,7 +52,7 @@
 
                 <label class="layui-form-label">维护店名称</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="" name="shop_name" placeholder="维护店名称" class="layui-input">
+                    <input type="text" value="" name="shop_name" id="shop_name" placeholder="维护店名称" class="layui-input">
                 </div>
 
             </div>
@@ -69,7 +61,7 @@
 
                 <label class="layui-form-label">维护项目</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="" name="project" placeholder="维护项目" class="layui-input">
+                    <input type="text" value="" name="project" id="project" placeholder="维护项目" class="layui-input">
                 </div>
 
             </div>
@@ -78,7 +70,7 @@
 
                 <label class="layui-form-label">经办人</label>
                 <div class="layui-input-inline">
-                    <select name="manager_id" lay-search>
+                    <select name="manager_id" id="manager_id" lay-search>
                         {volist name='managerData' id='managerList' key='key'}
                             <option value="{$managerList.id}">{$managerList.real_name}</option>
                         {/volist}
@@ -91,7 +83,7 @@
 
                 <label class="layui-form-label">维护原因</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="" name="reason" placeholder="维护原因" class="layui-input">
+                    <input type="text" value="" name="reason" id="reason" placeholder="维护原因" class="layui-input">
                 </div>
 
             </div>
@@ -110,7 +102,7 @@
 
             <div class="layui-form-item">
                 <div class="layui-input-block">
-                    <button class="layui-btn" lay-submit="" lay-filter="submit">立即提交</button>
+                    <button class="layui-btn" lay-submit="" lay-filter="submit" id="save">立即提交</button>
                     <button type="reset" class="layui-btn layui-btn-primary">重置</button>
                 </div>
             </div>
@@ -120,6 +112,18 @@
     </div>
 </section>
 <script>
+    var alertMessage = function (msg,icon,type,shift,time,shade) {
+        msg = msg || '提示信息缺失';
+        icon = icon || 0;
+        type = type || 0;
+        shift = shift || 3;
+        time = time || 1000;
+        shade = shade || 0.372;
+        var config = {icon: icon,type: type,shift: shift,time:time,shade:shade};
+        layui.use(['layer'],function () {
+            layer.msg(msg,config);
+        });
+    };
     //参考史航哥写的，感谢
     layui.use(['form','laydate'], function(){
         var form = layui.form();
@@ -139,6 +143,47 @@
                     alert(data.message);
                 }
                 form.render('select');
+            },"json");
+
+        });
+    });
+    $(function(){
+        //新增提交
+        $('#save').click(function(){
+            var city_id =  $("#cityId").val();
+            if(city_id==''){
+                alertMessage('请选择城市',5,'',6);
+                return false;
+            }
+            var car_id =  $("#citycar").val();
+            if(car_id==''){
+                alertMessage('请选择车辆',5,'',6);
+                return false;
+            }
+            var fee = $("#fee").val();
+            if(fee==''){
+                alertMessage('费用请输入数字',5,'',6);
+                return false;
+            }
+            var manager_id = $("#manager_id").val();
+            if(manager_id==''){
+                alertMessage('经办人不能为空',5,'',6);
+                return false;
+            }
+            var shop_name =  $("#shop_name").val();
+            var reason =  $("#reason").val();
+
+            var start_time =  $("#start_time").val();
+            var end_time = $("#end_time").val();
+            var project = $("#project").val();
+            var repairType = $("#repairType").val();
+            $.post("{:url('add')}",{city_id:city_id,car_id:car_id,fee:fee,manager_id:manager_id,shop_name:shop_name,reason:reason,start_time:start_time,end_time:end_time,project:project,repairType:repairType},function(data){
+                if(data.code==200){
+                    alertMessage(data.message,6,'',6);
+                    window.parent.location.href=data.data;
+                }else{
+                    alertMessage(data.message,5,'',6);
+                }
             },"json");
 
         });

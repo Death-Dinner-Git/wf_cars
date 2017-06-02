@@ -1,24 +1,40 @@
+
 <style type="text/css">
  #allmap {width:100%;height:100%;}
 </style>
 
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=6g0xlY8ISU77UsnVp7EgIt3mV54k6Gmz"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/library/LuShu/1.2/src/LuShu_min.js"></script>
 
 <div class="layui-form-item" style="display:block;height:400px;">
 	<div id="allmap"></div>
 </div>
 
-<table class="layui-table" lay-skin="row" lay-even="">
+<table class="layui-table" lay-skin="row" lay-even>
     <tbody>
 			<tr>
 				<td style="width: 100px;">
 					订单编号：{$record.order_num}
 				</td>
 				<td style="width: 100px;">
-					订单类型：{$record.order_type}
+					{empty name="$record.order_type"}
+						订单类型：暂无
+					{else /}
+							{eq name="$record.order_type" value="come"}订单类型：去程{/eq}
+							{eq name="$record.order_type" value="back"}订单类型：返程{/eq}
+							{eq name="$record.order_type" value="returned"}订单类型：已还车{/eq}
+					{/empty}
 				</td>
 				<td style="width: 100px;">
-					订单状态：{$record.order_status}
+					{empty name="$record.order_status"}
+						订单状态：未派车
+					{else /}
+							{eq name="$record.order_status" value="waitOrder"}订单状态：抢单中{/eq}
+							{eq name="$record.order_status" value="ordered"}订单状态：成功匹配{/eq}
+							{eq name="$record.order_status" value="drivering"}订单状态：订单进行中{/eq}
+							{eq name="$record.order_status" value="over"}订单状态：订单完成{/eq}
+							{eq name="$record.order_status" value="cancel"}订单状态：行程取消{/eq}
+					{/empty}
 				</td>
 				<td style="width: 100px;">
 					订单开始时间：{$record.start_time}
@@ -63,12 +79,32 @@
     </tbody>
 </table>
 <script type="text/javascript">
-
-// 百度地图API功能
-var map = new BMap.Map("allmap");
-map.centerAndZoom(new BMap.Point({$record.start_lng},{$record.start_lat}), 11);
-var p1 = new BMap.Point({$record.start_lng},{$record.start_lat});
-var p2 = new BMap.Point({$record.end_lng},{$record.end_lat});
-var driving = new BMap.DrivingRoute(map, {renderOptions:{map: map, autoViewport: true}});
-driving.search(p1, p2);
+		// 百度地图API功能
+        var map = new BMap.Map('allmap');
+        map.enableScrollWheelZoom();
+        var lushu;
+     	var arrPois = new Array();
+     	var array = eval('([{$record.gps}])');
+     	for (var i = 0; i < array.length; i++) {
+     		var str = array[i].split(",");
+     		arrPois.push(new BMap.Point(str[0],str[1]));
+     	}
+     	if(array.length == 0){
+     		var startLat = {$record.start_lat};
+     		var startLng = {$record.start_lng};
+     		map.centerAndZoom(new BMap.Point(startLng, startLat), 10);
+     	}else{
+     		var lastStr = array[array.length-1].split(",");
+     		map.centerAndZoom(new BMap.Point(lastStr[0], lastStr[1]), 10);
+     	}
+      	map.addOverlay(new BMap.Polyline(arrPois, {strokeColor: '#111'}));
+      	lushu = new BMapLib.LuShu(map, arrPois, {
+                        autoView : true,
+                        enableRotation : true,
+                        autoView:true,//是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整
+                        icon  : new BMap.Icon('http://developer.baidu.com/map/jsdemo/img/car.png', new BMap.Size(52,26),{anchor : new BMap.Size(27, 13)}),
+                        speed : 500,
+                        landmarkPois:[]
+         });
+      	lushu.start();
 </script>

@@ -36,7 +36,7 @@ class DriverController extends BaseController{
 		$front = array('real_name'=>'','create_time_start'=>'','create_time_end'=>'');
 		if(Request::instance()->isGet()){
 			if(!empty($_GET['username'])){
-				$where['real_name'] = $_GET['username'];
+				$where['real_name'] = ['like','%'.$_GET['username'].'%'];
 				$front['real_name'] = $_GET['username'];
 			}
 			if(!empty($_GET['create_time_start'])){
@@ -60,6 +60,7 @@ class DriverController extends BaseController{
 		$this->assign('front',$front);
 		$this->assign('driverList',$driverList);
 		$this->assign('count',$count);
+		$this->assign('empty',"<tr><td colspan='7'>暂时没有数据</td></tr>");
 		return $this->fetch();
 	}
 

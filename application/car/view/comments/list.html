@@ -1,10 +1,10 @@
 <form class="layui-form layui-form-pane"  action="{:url('list')}">
     <div class="layui-form-item">
-
         <label class="layui-form-label">全公司</label>
         <div class="layui-input-inline">
             <select name="departmentid" lay-search>
                 <option value="">请选择部门</option>
+				<option value="">不限</option>
 				{volist name="department" id="vo"}
 					<option value="{$vo.id}" {eq name="vo.id" value="$front.departmentid"}selected{/eq} >{$vo.name}</option>
 				{/volist}
@@ -14,6 +14,7 @@
         <div class="layui-input-inline">
             <select name="level">
                 <option value="">请选择分值</option>
+				<option value="">不限</option>
 				 <option value="1" {eq name="$front.level" value="1"}selected{/eq}>1分</option>
 				 <option value="2" {eq name="$front.level" value="2"}selected{/eq}>2分</option>
 				 <option value="3" {eq name="$front.level" value="3"}selected{/eq}>3分</option>
@@ -25,6 +26,7 @@
         <div class="layui-input-inline">
             <select name="driverId">
                 <option value="">请选择司机</option>
+				<option value="">不限</option>
 				{volist name="driver" id="vo"}
 					<option value="{$vo.id}" {eq name="vo.id" value="$front.driverId"}selected{/eq} >{$vo.real_name}</option>
 				{/volist}
@@ -45,7 +47,7 @@
     </div>
 </form>
 
-<table class="layui-table" lay-skin="row" lay-even="">
+<table class="layui-table dinner-table" lay-skin="row" lay-even="">
     <thead>
     <tr>
         <th>车牌号/司机</th>
@@ -57,7 +59,8 @@
     </tr>
     </thead>
     <tbody>
-	{volist name="CommentsList" id="vo" key="key" empty="暂时没有数据"}
+	{volist name="CommentsList" id="vo" key="key" empty="$empty"}
+	$empty
 			<tr data-key="{$key}">
 				<td style="width: 100px;">
 				车牌号：{$vo.number_plate}<br/>
@@ -80,8 +83,8 @@
 					{$vo.driver_name}
 				</td>
 			</tr>
-    </tbody>
 	{/volist}
+    </tbody>
 </table>
 
 <!-- 分页容器 主要是传递总数 -->

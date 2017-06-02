@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<form class="layui-form layui-form-pane" action="{:url('list')}" method="post">
+<form class="layui-form layui-form-pane" action="{:url('list')}">
     <div class="layui-form-item">
 
         <label class="layui-form-label">司机</label>
@@ -16,19 +16,19 @@
             <select name="driverId" lay-search>
                 <option value="">请选择司机</option>
                 {volist name='driverList' id='vo' key='key'}
-                <option value="{$vo.id}">{$vo.real_name}</option>
+                <option value="{$vo.id}" {eq name="$vo.id" value="$driverId" }selected{/eq}>{$vo.real_name}</option>
                 {/volist}
             </select>
         </div>
 
         <label class="layui-form-label">开始日期:</label>
         <div class="layui-input-inline">
-            <input name="create_time_start" value="" class="layui-input" placeholder="开始日期" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+            <input name="create_time_start" value="{$start_time}" class="layui-input" placeholder="开始日期" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
         </div>
 
         <label class="layui-form-label">结束日期:</label>
         <div class="layui-input-inline">
-            <input name="create_time_end" value="" class="layui-input" placeholder="结束日期" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+            <input name="create_time_end" value="{$end_time}" class="layui-input" placeholder="结束日期" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
         </div>
 
         <button class="layui-btn" lay-submit="">查询</button>
@@ -54,7 +54,7 @@
     {volist name='salary' id='vo' key='key'}
     <tr data-key="1">
         <td style="width: 100px;">{$vo.number_plate}</td>
-        <td style="width: 100px;">老司机开挖掘机</td>
+        <td style="width: 100px;">{$vo.real_name}</td>
         <td style="width: 100px;">
             {$vo.sign_time}
         </td>

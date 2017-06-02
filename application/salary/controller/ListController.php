@@ -35,19 +35,27 @@ class ListController extends BaseController
      * @return array
      **/
     public function ListAction($pageNumber = 1){
+        //查询
+        $driverId = '';
+        $start_time = '';
+        $end_time = '';
+        if (request()->request('driverId')){
+            $key = trim(request()->request('driverId'));
+            $where['takeCarOrder.driver_id'] = $key;
+            $driverId = $key;
+        }
+        if (request()->request('create_time_start')){
+            $key = trim(request()->request('create_time_start'));
+            $where['takeCarOrder.start_time'] = array('egt',$key);
+            $start_time = $key;
+        }
+        if (request()->request('create_time_end')){
+            $key = trim(request()->request('create_time_end'));
+            $where['takeCarOrder.end_time'] = array('elt',$key);
+            $end_time = $key;
+        }
         //取得工资结算列表
         $where['OutCar.is_delete'] = 1;
-        if(Request::instance()->isPost()){
-            if(!empty($_POST['driverId'])){
-                $where['Driver.driverId'] = $_POST['driverId'];
-            }
-            if(!empty($_POST['create_time_start'])){
-                $where['takeCarOrder.start_time'] = array('egt',$_POST['create_time_start']);
-            }
-            if(!empty($_POST['create_time_end'])){
-                $where['takeCarOrder.end_time'] = array('elt',$_POST['create_time_end']);
-            }
-        }
         $this->listData = $this->salaryDataAction($where,$pageNumber);
         //总数据
         $this->countSum = $this->salarySumAction($where);
@@ -57,6 +65,10 @@ class ListController extends BaseController
         $this->assign('count',$this->page);
         $this->assign('driverList',$driverList);
         $this->assign('salary',$this->listData);
+        //查询的参数
+        $this->assign('driverId',$driverId);
+        $this->assign('start_time',$start_time);
+        $this->assign('end_time',$end_time);
         return view('salaryList');
     }
 
@@ -67,7 +79,7 @@ class ListController extends BaseController
         $where = ['OutCar.id'=>$id];
         $salaryList = $this->salaryFindAction($where);
         //保存
-        if(Request::instance()->isPost()){
+        if(Request::instance()->isAjax()){
             $outCarId = Request::instance()->param('outcarId');
             $other_money = Request::instance()->param('other_money');
             $sum_money = Request::instance()->param('sum_money');
@@ -78,15 +90,16 @@ class ListController extends BaseController
                      'remark'=>$remark,
                      'update_time'=>date('Y-m-d H:i:s')
             ];
+            $status = 200;   //记录成功否
             // 过滤post数组中的非数据表字段数据
             $ValidateError = Loader::validate('OutCar');
             if(!$ValidateError->check($data)){
                 return json(['data'=>NULL,'code'=>404,'message'=>$ValidateError->getError()]);
             }
             if(self::$_currentModel->save($data,['id'=>$outCarId])){
-                return json(['data'=>url('list'),'code'=>200,'message'=>'更新成功']);
+                return json(['data'=>url('list'),'code'=>200,'message'=>'编辑成功']);
             }else{
-                return json(['data'=>NULL,'code'=>404,'message'=>'更新失败']);
+                return json(['data'=>NULL,'code'=>404,'message'=>'编辑失败']);
             }
         }
         $this->assign('salaryList',$salaryList);
@@ -102,6 +115,7 @@ class ListController extends BaseController
         $list = Db::view('OutCar','id,sign_time,sign_mileage,other_money,sum_money,order_money,driverTime')->alias('a')
             ->view('takeCarOrder',['id'=>'takeId','driver_mileage'],'takeCarOrder.id=OutCar.take_car_order_id')
             ->view('Car','number_plate','Car.id=takeCarOrder.car_id')
+            ->view('Driver',['real_name'],'Driver.id=takeCarOrder.driver_id') //'LEFT'
             ->where($where)
             ->page($pageNumber,$this->pageCount)->order('OutCar.id desc')->select();
         return $list;
@@ -115,6 +129,7 @@ class ListController extends BaseController
         $list = Db::view('OutCar','id,sign_time,sign_mileage,other_money,sum_money,order_money')
             ->view('takeCarOrder',['id'=>'takeId'],'takeCarOrder.id=OutCar.take_car_order_id')
             ->view('Car','number_plate','Car.id=takeCarOrder.car_id')
+            ->view('Driver',['real_name'],'Driver.id=takeCarOrder.driver_id')
             ->where($where)
             ->count();
         return $list;
@@ -130,6 +145,7 @@ class ListController extends BaseController
             ->view('Car','number_plate','Car.id=takeCarOrder.car_id')
             ->view('Manager','real_name','OutCar.manager_id=Manager.id')
             ->view('City',['name'=>'city_name'],'City.id=takeCarOrder.city_id')
+            ->view('Driver',['real_name'],'Driver.id=takeCarOrder.driver_id')
             ->where($where)
             ->find();
         return $list;
@@ -139,6 +155,7 @@ class ListController extends BaseController
         $list = Db::view('OutCar','id,sign_time,sign_mileage,other_money,sum_money,order_money,driverTime')->alias('a')
             ->view('takeCarOrder',['id'=>'takeId','driver_mileage'],'takeCarOrder.id=OutCar.take_car_order_id')
             ->view('Car','number_plate','Car.id=takeCarOrder.car_id')
+            ->view('Driver',['real_name'],'Driver.id=takeCarOrder.driver_id')
             ->where($where)
             ->page($pageNumber,$this->pageCount)->order('OutCar.id desc')->fetchSql(true)->select();
         return $list;

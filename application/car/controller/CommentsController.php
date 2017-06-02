@@ -62,7 +62,7 @@ class CommentsController extends BaseController{
 		
 		$this->assign('CommentsList',$CommentsList);//列表
 		$this->assign('count',$count);//页码
-
+		$this->assign('empty',"<tr><td colspan='6'>暂时没有数据</td></tr>");
 
 		$this->assign('driver',$this->_DriverList);//司机
 		$this->assign('department',$this->_DepartmentList);//部门

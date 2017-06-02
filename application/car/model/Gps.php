@@ -1,25 +1,18 @@
 <?php
 /*
 -----------------------------------
- 部门模型
+ GPS模型
 -----------------------------------
 */
 namespace app\car\model;
 use app\common\model\Model;
+use think\Loader;
 
-class Department extends Model{
+class Gps extends Model{
 
 	protected $autoWriteTimestamp = 'datetime';//自动写入
 	protected $dateFormat = 'Y-m-d H:i:s';//自动格式输出
+	
 
-
-	/**
-	* @部门列表
-	* @return array
-	**/
-	public function lists($pageNumber,$totalNumber,$where){
-		$lists = Department::where($where)->page($pageNumber,$totalNumber)->select();
-		return $lists;
-	}
 
 }

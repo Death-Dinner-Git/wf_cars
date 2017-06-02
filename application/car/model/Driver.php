@@ -12,7 +12,7 @@ class Driver extends Model{
 
 	protected $autoWriteTimestamp = 'datetime';//自动写入
 	protected $dateFormat = 'Y-m-d H:i:s';//自动格式输出
-	protected $resultSetType = 'collection';
+
 	/**
 	* @司机操作验证器
 	* @parma array ***
@@ -64,7 +64,7 @@ class Driver extends Model{
 	* @return array
 	**/
 	public  function turnCityName($cityid){
-		$CityData = Loader::model('City')->where('wofang_id',$cityid)->value('name');
+		$CityData = Loader::model('City')->where('id',$cityid)->value('name');
 		return $CityData;
 	}
 

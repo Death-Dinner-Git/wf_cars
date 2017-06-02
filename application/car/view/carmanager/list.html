@@ -9,6 +9,7 @@
         <div class="layui-input-inline">
             <select name="cityId" lay-search>
                 <option value="">请选择城市</option>
+				<option value="">不限</option>
 				{volist name="city" id="vo"}
 				<option value="{$vo.id}" {eq name="vo.id" value="$front.cityId"}selected{/eq} >{$vo.name}</option>
 				{/volist}
@@ -16,11 +17,6 @@
         </div>
        <div class="layui-input-inline">
            <input type="submit" class="layui-btn" value="搜索"/>
-		   <!--
-		   <a href="javascript:void(0);" onclick="showUrl('添加车辆','add','70%','80%','2')">
-				<label class="layui-btn">添加</label>
-		   </a>
-		   -->
 		   <a class="layui-btn" href="{:url('add')}?iframe=true">
 				添加
 		   </a>
@@ -28,18 +24,19 @@
     </div>
 </form>
 
-<table class="layui-table" lay-skin="row" lay-even="">
+<table class="layui-table dinner-table" lay-skin="row" lay-even="">
     <thead>
     <tr>
         <th>Id</th>
         <th>车牌号</th>
         <th>车型</th>
+		<th>SIM卡</th>
         <th>区域</th>
         <th>操作</th>
     </tr>
     </thead>
     <tbody>
-	{volist name="CarList" id="vo" key="key" empty="暂时没有数据"}
+	{volist name="CarList" id="vo" key="key" empty="$empty"}
 			<tr data-key="{$key}">
 				<td style="width: 100px;">
 					{$vo.id}
@@ -47,8 +44,11 @@
 				<td style="width: 100px;">
 					{$vo.number_plate}
 				</td>
-				<td style="width: 150px;">
+				<td style="width: 100px;">
 					{$vo.car_type}
+				</td>
+				<td style="width: 100px;">
+					{$vo.SIM}
 				</td>
 				<td style="width: 100px;">
 					{$vo.name}
@@ -87,6 +87,7 @@
 
 	//删除
 	function delCar(id){
+	layer.confirm('确定删除该车辆?', {icon: 3, title:'提示'}, function(index){
 		$.post("{:url('delCar')}",{id:id},function(data){
 			if(data.code==200){
 				alertMessage(data.message,6,'',6);
@@ -94,7 +95,9 @@
 			}else{
 				alertMessage(data.message,5,'',6);
 			}
-		},"json");
+		},"json");  
+		layer.close(index);
+	});
 	}
 
 </script>

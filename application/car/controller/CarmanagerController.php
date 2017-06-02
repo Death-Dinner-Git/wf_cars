@@ -36,7 +36,7 @@ class CarmanagerController extends BaseController{
 		$front = array('numberPlate'=>'','cityId'=>'');
 		if(Request::instance()->isGet()){
 			if(!empty($_GET['numberPlate'])){
-				$where['a.number_plate'] = $_GET['numberPlate'];
+				$where['a.number_plate'] = ['like','%'.$_GET['numberPlate'].'%'];
 				$front['numberPlate'] = $_GET['numberPlate'];
 			}
 			if(!empty($_GET['cityId'])){
@@ -58,7 +58,7 @@ class CarmanagerController extends BaseController{
 		$this->assign('city',$this->_CityList);//城市
 
 		$this->assign('front',$front);//筛选条件
-
+		$this->assign('empty',"<tr><td colspan='6'>暂时没有数据</td></tr>");
 		return $this->fetch();
 	}
 

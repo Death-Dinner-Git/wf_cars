@@ -11,8 +11,11 @@ layui.define(['element','layer'], function(exports) {
 			this.config = {
 				elem: undefined,
 				closed: true, //是否包含删除按钮
-				autoRefresh: false,
-				contextMenu:false
+				autoRefresh: true,
+				contextMenu:false,
+                // maxSetting:{
+				// 	max:10,
+				// }
 			};
 		};
 	var ELEM = {};

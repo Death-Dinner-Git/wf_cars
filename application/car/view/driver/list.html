@@ -18,7 +18,7 @@
     </div>
 </form>
 
-<table class="layui-table" lay-even="" lay-skin="row">
+<table class="layui-table dinner-table" lay-even="" lay-skin="row">
     <thead>
     <tr>
 		<th>ID序号</th>
@@ -32,7 +32,7 @@
     </thead>
     <tbody>
 
-{volist name="driverList" id="vo" key="key" empty="暂时没有数据"}
+{volist name="driverList" id="vo" key="key" empty="$empty"}
     <tr data-key="{$key}">
         <td style="width: 100px;">
             {$vo.id}
@@ -82,14 +82,18 @@
 
 	//删除
 	function delDriver(id){
-		$.post("{:url('delDriver')}",{id:id},function(data){
-			if(data.code==200){
-				alertMessage(data.message,6,'',6);
-				window.location.href=data.data;
-			}else{
-				alertMessage(data.message,5,'',6);
-			}
-		},"json");
+		layer.confirm('确定删除该司机?', {icon: 3, title:'提示'}, function(index){
+			$.post("{:url('delDriver')}",{id:id},function(data){
+				if(data.code==200){
+					alertMessage(data.message,6,'',6);
+					window.location.href=data.data;
+				}else{
+					alertMessage(data.message,5,'',6);
+				}
+			},"json");
+		    layer.close(index);
+		});
+
 	}
 
 </script>

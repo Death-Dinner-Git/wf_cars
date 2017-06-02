@@ -41,24 +41,30 @@
 
 //删除out
 function del(id){
-	$.post("{:url('delOut')}",{id:id},function(data){
-		if(data.code==200){
-			alertMessage(data.message,6,'',6);
-		}else{
-			alertMessage(data.message,5,'',6);
-		}
-	},"json");
+	layer.confirm('确定删除?', {icon: 3, title:'提示'}, function(index){
+		$.post("{:url('delOut')}",{id:id},function(data){
+			if(data.code==200){
+				alertMessage(data.message,6,'',6);
+			}else{
+				alertMessage(data.message,5,'',6);
+			}
+		},"json");	  
+		layer.close(index);
+	});
 }
 
 //删除outorder
 function delOutOrder(id){
-	$.post("{:url('deloutOrder')}",{id:id},function(data){
-		if(data.code==200){
-			alertMessage(data.message,6,'',6);
-		}else{
-			alertMessage(data.message,5,'',6);
-		}
-	},"json");
+	layer.confirm('确定删除?', {icon: 3, title:'提示'}, function(index){
+		$.post("{:url('deloutOrder')}",{id:id},function(data){
+			if(data.code==200){
+				alertMessage(data.message,6,'',6);
+			}else{
+				alertMessage(data.message,5,'',6);
+			}
+		},"json");
+		layer.close(index);
+	});
 }
 
 </script>
@@ -80,6 +86,7 @@ function delOutOrder(id){
         <div class="layui-input-inline">
             <select name="cityid" lay-search>
                 <option value="">请选择城市</option>
+				<option value="">不限</option>
 				{volist name="city" id="vo"}
 					<option value="{$vo.id}" {eq name="vo.id" value="$front.cityid"}selected{/eq} >{$vo.name}</option>
 				{/volist}
@@ -90,6 +97,7 @@ function delOutOrder(id){
         <div class="layui-input-inline">
             <select name="driverId">
                 <option value="">请选择司机</option>
+				<option value="">不限</option>
 				{volist name="driver" id="vo"}
                  <option value="{$vo.id}" {eq name="vo.id" value="$front.driverId"}selected{/eq} >{$vo.real_name}</option>
 				{/volist}
@@ -100,6 +108,7 @@ function delOutOrder(id){
         <div class="layui-input-inline">
             <select name="status">
                 <option value="">请选择状态</option>
+				<option value="">不限</option>
                 <option value="1" {eq name="$front.status" value="1"}selected{/eq}>未匹配</option>
 				<option value="2" {eq name="$front.status" value="2"}selected{/eq}>成功匹配</option>
             </select>
@@ -122,7 +131,7 @@ function delOutOrder(id){
     </div>
 </form>
 
-<table class="layui-table" lay-skin="row" lay-even="">
+<table class="layui-table dinner-table" lay-skin="row" lay-even="">
     <thead>
     <tr>
         <th>车牌号/司机</th>
@@ -139,31 +148,43 @@ function delOutOrder(id){
     </tr>
     </thead>
     <tbody>
-		{volist name="OutList" id="vo" key="key" empty="暂时没有数据"}
+		{volist name="OutList" id="vo" key="key" empty="$empty"}
+	
 			<tr data-key="{$key}">
 				<td style="width: 100px;">
 					<div>车:{$vo.number_plate}</div>
-					<div>司:{$vo.driver_name}</div>
+					<div>司:{$vo.real_name}</div>
 				</td>
 				<td style="width: 100px;">
 					<div>部:{$vo.department_name}</div>
 					<div>人:{$vo.manager_name}</div>
 				</td>
 				<td style="width: 100px;">
+					{empty name="vo.order_status"}
+						<div>未派车</div>
+					{else /}
+						<div>
+							{eq name="vo.order_status" value="waitOrder"}抢单中{/eq}
+							{eq name="vo.order_status" value="ordered"}成功匹配{/eq}
+							{eq name="vo.order_status" value="drivering"}订单进行中{/eq}
+							{eq name="vo.order_status" value="over"}订单完成{/eq}
+							{eq name="vo.order_status" value="cancel"}行程取消{/eq}
+						</div>
+					{/empty}
 				</td>
 				<td style="width: 100px;">
-					<div>出发地:{$vo.start_address}</div>
-					<div>接客地:{$vo.end_address}</div>
+					<div>出发地:{$vo.department_name}</div>
+					<div>接客地:{$vo.build_name}</div>
 					<div>用途:{$vo.used_id}</div>
 				</td>
 				<td style="width: 150px;">
-					<div>出:{$vo.out_car_time}</div>
+					<div>出:{$vo.outcartime}</div>
 					<div>收:{$vo.back_date}</div>
 				</td>
 				<td style="width: 100px;">
-					<div>出:{$vo.from_mileage}</div>
+					<div>出:{$vo.sign_mileage}</div>
 					<div>收:{$vo.back_mileage}</div>
-					<div>公里:{$vo.sign_mileage}</div>
+					<div>公里:{$vo.back_mileage}-{$vo.sign_mileage}</div>
 				</td>
 				<td style="width: 100px;">
 					{$vo.customer_num}
@@ -178,14 +199,14 @@ function delOutOrder(id){
 					{$vo.build_name}
 				</td>
 				<td style="width: 150px;text-align: center;">
-					{eq name="vo.order_status" value=""}
+					{empty name="vo.order_status"}
 						<a href="javascript:void(0);">
-						  <a  href="{:url('lookbuild',array('id'=>$vo['orderid']))}?iframe=true" class="layui-btn layui-btn-mini">
+						  <a  href="{:url('lookbuild',array('id'=>$vo['outid']))}?iframe=true" class="layui-btn layui-btn-mini">
 						   <i class="fa fa-search"></i>安排看房
 						  </a>
 						</a>
 						<a href="javascript:void(0);">
-						  <button onclick="near({$vo.outid})" id="{$vo.outid}" build="{$vo.build_id}" manager="{$vo.manager_id}" startcity="{$vo.start_city_id}" endcity="{$vo.end_city_id}" startlat="{$vo.start_lat}" class="layui-btn layui-btn-mini">
+						  <button onclick="near({$vo.outid})" id="{$vo.outid}" build="{$vo.build_id}" manager="{$vo.managerid}" startcity="{$vo.start_city_id}" endcity="{$vo.end_city_id}" startlat="{$vo.startlat}" class="layui-btn layui-btn-mini">
 						   <i class="fa fa-search"></i>附近车辆
 						  </button>
 						</a>
@@ -194,43 +215,27 @@ function delOutOrder(id){
 						   <i class="fa fa-search"></i>删除
 						  </button>
 						</a>
-					{/eq}
-					{eq name="vo.order_status" value="success"}
+					{/empty}
+
+					{if condition="($vo.order_status == 'ordered') "}
+						<a href="javascript:void(0);"><button onclick="showUrl('查看行驶记录','/car/out/takeOrderShow?id={$vo.orderid}&iframe=true','72%','80%','2',true,true,'LAY_TRAVEL_{$vo.orderid}')" class="layui-btn layui-btn-mini"><i class="fa fa-pencil"></i>查看行驶记录</button></a>
+
 						<a href="javascript:void(0);">
-							<button onclick="showUrl('查看行驶记录','{:url('takeOrderShow',array('id'=>$vo['orderid']))}?iframe=true','72%','88%','2',true,true,'LAY_LOAD_{$vo.orderid}')" class="layui-btn layui-btn-mini">
-								<i class="fa fa-search"></i>
-								查看行驶记录
-							</button>
+						  <a  href="{:url('lookbuild',array('id'=>$vo['outid']))}?iframe=true" class="layui-btn layui-btn-mini">
+						   <i class="fa fa-search"></i>编辑
+						 </a>
 						</a>
 						<a href="javascript:void(0);">
-							<button onclick="showUrl('编辑','{:url('editOrder',array('id'=>$vo['orderid']))}?iframe=true','72%','88%','2')" class="layui-btn layui-btn-mini">
-								<i class="fa fa-pencil"></i>
-								编辑
-							</button>
-						</a>
-						<a href="javascript:void(0);">
-						  <button onclick="delOutOrder({$vo.orderid})" class="layui-btn layui-btn-mini">
-						   <i class="fa fa-remove"></i>删除
+						  <button onclick="delOutOrder({$vo.outid})" class="layui-btn layui-btn-mini">
+						   <i class="fa fa-search"></i>删除
 						  </button>
 						</a>
+					{/if}
 
-					{/eq}
-					{eq name="vo.order_status" value="drivering"}
-						<a href="javascript:void(0);">
-							<button onclick="showUrl('查看行驶记录','{:url('takeOrderShow',array('id'=>$vo['orderid']))}?iframe=true','72%','88%','2',true,true,'LAY_LOAD_{$vo.orderid}')" class="layui-btn layui-btn-mini">
-								<i class="fa fa-search"></i>
-								查看行驶记录
-							</button>
-						</a>
-					{/eq}
-					{eq name="vo.order_status" value="over"}
-						<a href="javascript:void(0);">
-							<button onclick="showUrl('查看行驶记录','{:url('takeOrderShow',array('id'=>$vo['orderid']))}?iframe=true','72%','88%','2',true,true,'LAY_LOAD_{$vo.orderid}')" class="layui-btn layui-btn-mini">
-								<i class="fa fa-search"></i>
-								查看行驶记录
-							</button>
-						</a>
-					{/eq}
+					{if condition="($vo.order_status!='')and($vo.order_status != 'cancel')and($vo.order_status != 'ordered') "}
+						<a href="javascript:void(0);"><button onclick="showUrl('查看行驶记录','/car/out/takeOrderShow?id={$vo.orderid}&iframe=true','72%','80%','2',true,true,'LAY_TRAVEL_{$vo.orderid}')" class="layui-btn layui-btn-mini"><i class="fa fa-pencil"></i>查看行驶记录</button></a>
+					{/if}
+
 				</td>
 			</tr>
 		{/volist}

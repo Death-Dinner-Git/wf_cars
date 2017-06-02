@@ -8,6 +8,7 @@ namespace app\car\controller;
 use app\common\controller\BaseController;
 use think\Loader;
 use think\Request;
+use think\Db;
 
 use app\car\model\TakeCarOrder;
 use app\car\model\Car;
@@ -35,133 +36,22 @@ class TakecarorderController extends BaseController{
 		$this->_DepartmentList = Loader::model('Department')->lists($pageNumber='',$totalNumber='',$where='');
 	}
 
-
-    /**
-     * @description 打车列表
-     * @param int $pageNumber
-     * @param int $totalNumber
-     * @param null $numberPlate
-     * @param null $managerName
-     * @param null $cityid
-     * @param null $driverId
-     * @param null $status
-     * @param null $create_time_start
-     * @param null $create_time_end
-     * @return mixed
-     */
-    public function listAction($pageNumber=1,$totalNumber=10,$numberPlate = null,$managerName = null, $cityid = null,$driverId = null, $status = null, $create_time_start = null, $create_time_end = null)
-    {
-
-        $each = 10;
-        $where = ['t.is_delete'=>'1'];
-        $param = [
-            'numberPlate'=>'',
-            'managerName'=>'',
-            'cityid'=>'',
-            'driverId'=>'',
-            'status'=>'',
-            'create_time_start'=>'',
-            'create_time_end'=>'',
-        ];
-        $join = [
-            [[Manager::tableName()=>'m'],['t.manager_id = m.id']],
-            [[Department::tableName()=>'de'],['m.department_id = de.id']],
-            [[BuildingBase::tableName()=>'b'],['t.building_base_id = b.id'],'LEFT'],
-            [[Car::tableName()=>'ca'],['t.car_id = ca.id'],'LEFT'],
-            [[City::tableName()=>'ci'],['t.city_id = ci.id'],'LEFT'],
-            [[Driver::tableName()=>'dr'],['t.driver_id = dr.id'],'LEFT'],
-        ];
-        $fields = [
-            'm.*,m.id as managerid,m.real_name as manager_name',
-            'de.*,de.id as departid,de.name as department_name',
-            't.*,t.id as orderid',
-            'b.*,b.id as buildid,b.name as build_name',
-            'ca.*',
-            'ci.*',
-            'dr.*,dr.id as driverid,dr.real_name as driver_name',
-        ];
-
-        $field = implode(',',$fields);
-        $query = TakeCarOrder::load()->alias('t');
-
-        if ($numberPlate && $numberPlate != ''){
-            $query = $query->where('ca.number_plate',$numberPlate);
-            $param['numberPlate'] = $numberPlate;
-        }
-
-        if ($managerName && $managerName != ''){
-            $query = $query->where('m.real_name',$managerName);
-            $param['managerName'] = $managerName;
-        }
-
-        if ($cityid && $cityid != ''){
-            $query = $query->where('t.city_id',$cityid);
-            $param['cityid'] = $cityid;
-        }
-
-        if ($driverId && $driverId != ''){
-            $query = $query->where('dr.driver_id',$driverId);
-            $param['driverId'] = $driverId;
-        }
-
-        if ($status && $status != ''){
-            $statuses = 'cancel';
-            if ($status == '1'){
-                $query = $query->where('t.take_car_order_id',null);
-            }else{
-                $query = $query->where('t.order_status','not in', $statuses);
-            }
-            $param['status'] = $status;
-        }
-        $newStart = null;
-        if (strtotime($create_time_start) && $create_time_start !== null && $create_time_start !== '') {
-            $newStart = date('Y-m-d H:i:s', strtotime($create_time_start));
-            $query = $query->where('t.out_car_time', '>=', $newStart);
-            $query = $query->where('t.out_car_time', '>=', $newStart);
-            $param['create_time_start'] = $create_time_start;
-        }
-        $newEnd = null;
-        if (strtotime($create_time_end) && $create_time_end !== null && $create_time_end !== '') {
-            $newEnd = date('Y-m-d H:i:s', strtotime($create_time_end));
-            $query = $query->where('t.out_car_time', '<=', $newEnd);
-            $query = $query->where('t.out_car_time', '<=', $newEnd);
-            $param['create_time_end'] = $create_time_end;
-        }
-
-        $query = $query->join($join)->where($where);
-        $query = $query->field($field);
-
-
-        $pageQuery = clone $query;
-        $count = ceil(($pageQuery->count())/$each);
-        $dataProvider = $query->page($pageNumber,$each)->order('t.create_time','DESC')->select();
-
-
-        $this->assign('front',$param);
-        $this->assign('TakeCarOrderList',$dataProvider);//列表
-        $this->assign('count',$count);//页码
-
-        $this->assign('driver',$this->_DriverList);//司机
-        $this->assign('department',$this->_DepartmentList);//部门
-        return $this->fetch();
-    }
-
-
-    /**
+	/**
 	* @打车列表
 	* @return array
 	**/
-	public function listsAction($pageNumber=1,$totalNumber=10){
+	/*
+	public function listAction($pageNumber=1,$totalNumber=10){
 		
 		$where = array();
 		$front = array('numberPlate'=>'','managerName'=>'','driverId'=>'','departmentid'=>'','orderstatus'=>'','ordertype'=>'','ordertype'=>'','create_time_start'=>'','create_time_end'=>'');
 		if(Request::instance()->isGet()){
 			if(!empty($_GET['numberPlate'])){
-				$where['e.number_plate'] = $_GET['numberPlate'];
+				$where['e.number_plate'] = ['like','%'.$_GET['numberPlate'].'%'];
 				$front['numberPlate'] = $_GET['numberPlate'];
 			}
 			if(!empty($_GET['managerName'])){
-				$where['c.real_name'] = $_GET['managerName'];
+				$where['c.real_name'] = ['like','%'.$_GET['managerName'].'%'];
 				$front['managerName'] = $_GET['managerName'];
 			}
 			if(!empty($_GET['driverId'])){
@@ -203,6 +93,126 @@ class TakecarorderController extends BaseController{
 		
 		return $this->fetch();
 	}
+	*/
+
+
+    /**
+     * @description 打车列表
+     * @param int $pageNumber
+     * @param int $totalNumber
+     * @param null $numberPlate
+     * @param null $managerName
+     * @param null $cityid
+     * @param null $driverId
+     * @param null $status
+     * @param null $create_time_start
+     * @param null $create_time_end
+     * @return mixed
+     */
+    public function listAction($pageNumber=1,$totalNumber=10,$numberPlate = null,$managerName = null, $driverId = null,$departmentid = null, $orderstatus = null,$ordertype=null, $create_time_start = null, $create_time_end = null)
+    {
+        
+		echo $orderstatus;
+
+        $each = 10;
+        $where = ['t.is_delete'=>'1'];
+        $param = [
+            'numberPlate'=>'',
+            'managerName'=>'',
+			'departmentid'=>'',
+            'driverId'=>'',
+            'orderstatus'=>'',
+            'create_time_start'=>'',
+            'create_time_end'=>'',
+			'ordertype'=>'',
+        ];
+        $join = [
+            [[Manager::tableName()=>'m'],['t.manager_id = m.id']],
+            [[Department::tableName()=>'de'],['t.department_id = de.id']],
+            [[BuildingBase::tableName()=>'b'],['t.building_base_id = b.id'],'LEFT'],
+            [[Car::tableName()=>'ca'],['t.car_id = ca.id'],'LEFT'],
+            [[City::tableName()=>'ci'],['t.city_id = ci.id'],'LEFT'],
+            [[Driver::tableName()=>'dr'],['t.driver_id = dr.id'],'LEFT'],
+        ];
+        $fields = [
+            'm.*,m.id as managerid,m.real_name as manager_name',
+            'de.*,de.id as departid,de.name as department_name',
+            't.*,t.id as orderid',
+            'b.*,b.id as buildid,b.name as build_name',
+            'ca.*',
+            'ci.*',
+            'dr.*,dr.id as driverid,dr.real_name as driver_name,dr.status as driverstatus',
+        ];
+
+        $field = implode(',',$fields);
+        $query = TakeCarOrder::load()->alias('t');
+
+        if ($numberPlate && $numberPlate != ''){
+            $query = $query->where('ca.number_plate','like','%'.$numberPlate.'%');
+            $param['numberPlate'] = $numberPlate;
+        }
+
+        if ($managerName && $managerName != ''){
+            $query = $query->where('m.real_name','like','%'.$managerName.'%');
+            $param['managerName'] = $managerName;
+        }
+
+        if ($departmentid && $departmentid != ''){
+            $query = $query->where('de.id',$departmentid);
+            $param['departmentid'] = $departmentid;
+        }
+
+        if ($driverId && $driverId != ''){
+            $query = $query->where('dr.id',$driverId);
+            $param['driverId'] = $driverId;
+        }
+
+        if ($orderstatus && $orderstatus != ''){
+            $query = $query->where('t.order_status',$orderstatus);
+            $param['orderstatus'] = $orderstatus;
+        }
+
+        if ($ordertype && $ordertype != ''){
+            $query = $query->where('t.order_type',$ordertype);
+            $param['ordertype'] = $ordertype;
+        }
+
+        $newStart = null;
+        if (strtotime($create_time_start) && $create_time_start !== null && $create_time_start !== '') {
+            $newStart = date('Y-m-d H:i:s', strtotime($create_time_start));
+            $query = $query->where('t.out_car_time', '>=', $newStart);
+            $query = $query->where('t.out_car_time', '>=', $newStart);
+            $param['create_time_start'] = $create_time_start;
+        }
+        $newEnd = null;
+        if (strtotime($create_time_end) && $create_time_end !== null && $create_time_end !== '') {
+            $newEnd = date('Y-m-d H:i:s', strtotime($create_time_end));
+            $query = $query->where('t.out_car_time', '<=', $newEnd);
+            $query = $query->where('t.out_car_time', '<=', $newEnd);
+            $param['create_time_end'] = $create_time_end;
+        }
+
+        $query = $query->join($join)->where($where);
+        $query = $query->field($field);
+		
+		//var_dump($query->page($pageNumber,$each)->order('t.create_time','DESC')->buildSql());
+
+        $pageQuery = clone $query;
+        $count = ceil(($pageQuery->count())/$each);
+        $dataProvider = $query->page($pageNumber,$each)->order('t.create_time','DESC')->select();
+		
+        $this->assign('front',$param);
+        $this->assign('TakeCarOrderList',$dataProvider);//列表
+        $this->assign('count',$count);//页码
+
+        $this->assign('driver',$this->_DriverList);//司机
+        $this->assign('department',$this->_DepartmentList);//部门
+
+		$this->assign('empty',"<tr><td colspan='10'>暂时没有数据</td></tr>");
+        return $this->fetch();
+    }
+	
+
 
 	/**
 	*@查看行驶记录
@@ -211,6 +221,7 @@ class TakecarorderController extends BaseController{
 	public function showrecordAction(){
 		$id = Request::instance()->param('id');
 		$result = self::$_currentModel->takeOrderShow($id);
+	
 		$this->assign('record',$result);
 		return $this->fetch();
 	}

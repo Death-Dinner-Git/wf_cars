@@ -11,7 +11,7 @@ class BuildingBase extends Model{
 
 	protected $autoWriteTimestamp = 'datetime';//自动写入
 	protected $dateFormat = 'Y-m-d H:i:s';//自动格式输出
-	protected $resultSetType = 'collection';
+
 	
 	/**
 	* @楼盘列表(分页)

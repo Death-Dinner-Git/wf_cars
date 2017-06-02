@@ -9,31 +9,17 @@
 	<div id="allmap"></div>
 </div>
 
-<table class="layui-table" lay-skin="row" lay-even>
+<table class="layui-table dinner-table" lay-skin="row" lay-even="">
     <tbody>
 			<tr>
 				<td style="width: 100px;">
 					订单编号：{$record.order_num}
 				</td>
 				<td style="width: 100px;">
-					{empty name="$record.order_type"}
-						订单类型：暂无
-					{else /}
-							{eq name="$record.order_type" value="come"}订单类型：去程{/eq}
-							{eq name="$record.order_type" value="back"}订单类型：返程{/eq}
-							{eq name="$record.order_type" value="returned"}订单类型：已还车{/eq}
-					{/empty}
+					订单类型：{$record.order_type}
 				</td>
 				<td style="width: 100px;">
-					{empty name="$record.order_status"}
-						订单状态：未派车
-					{else /}
-							{eq name="$record.order_status" value="waitOrder"}订单状态：抢单中{/eq}
-							{eq name="$record.order_status" value="ordered"}订单状态：成功匹配{/eq}
-							{eq name="$record.order_status" value="drivering"}订单状态：订单进行中{/eq}
-							{eq name="$record.order_status" value="over"}订单状态：订单完成{/eq}
-							{eq name="$record.order_status" value="cancel"}订单状态：行程取消{/eq}
-					{/empty}
+					订单状态：{$record.order_status}
 				</td>
 				<td style="width: 100px;">
 					订单开始时间：{$record.start_time}

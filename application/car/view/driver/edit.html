@@ -34,7 +34,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">司机姓名:</label>
                 <div class="layui-input-inline">
-					 <input class="layui-input" name="username" type="text" datatype="*" nullmsg="请填写司机姓名" errormsg="司机姓名不正确" value="{$DriverDetail.real_name}"/>
+					 <input class="layui-input" name="username" type="text" value="{$DriverDetail.real_name}"/>
                 </div>
             </div>
 	
@@ -72,14 +72,14 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">密码:</label>
                 <div class="layui-input-inline">
-					<input class="layui-input" name="password"  type="password" datatype="*" nullmsg="请填写密码" errormsg="密码类型错误">
+					<input class="layui-input" name="password"  type="password">
                 </div>
             </div>
 
             <div class="layui-form-item">
                 <label class="layui-form-label">确认密码:</label>
                 <div class="layui-input-inline">
-					<input class="layui-input" name="password_confirm"  type="password" recheck="password" datatype="*" nullmsg="请填写确认密码" errormsg="密码类型错误" >
+					<input class="layui-input" name="password_confirm"  type="password" recheck="password" >
                 </div>
             </div>
 

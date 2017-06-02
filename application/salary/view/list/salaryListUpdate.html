@@ -11,12 +11,12 @@
 <section id="content-container" style="display:flex; padding-top: 15px;">
     <div id="content-body" style="margin:auto;width: 800px;height: 600px;">
 
-        <form class="layui-form layui-form-pane" action="{:url('detail')}" method="post">
+        <form class="layui-form layui-form-pane">
             <div class="layui-form-item">
 
                 <label class="layui-form-label">车辆</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="{$salaryList.number_plate}" name="number_plate"  class="layui-input" readonly="readonly" style="background:#CCCCCC">
+                    <input type="text" value="{$salaryList.number_plate}" name="number_plate"  id="number_plate" class="layui-input" readonly="readonly" style="background:#CCCCCC">
                 </div>
 
             </div>
@@ -25,7 +25,7 @@
 
                 <label class="layui-form-label">城市</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="{$salaryList.city_name}" name="city_name"  class="layui-input" readonly="readonly" style="background:#CCCCCC">
+                    <input type="text" value="{$salaryList.city_name}" name="city_name" id="city_name" class="layui-input" readonly="readonly" style="background:#CCCCCC">
                 </div>
 
             </div>
@@ -34,7 +34,7 @@
 
                 <label class="layui-form-label">置业顾问</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="{$salaryList.real_name}" name="real_name"  class="layui-input" readonly="readonly" style="background:#CCCCCC">
+                    <input type="text" value="{$salaryList.real_name}" name="real_name" id="real_name" class="layui-input" readonly="readonly" style="background:#CCCCCC">
                 </div>
 
             </div>
@@ -42,7 +42,7 @@
 
                 <label class="layui-form-label">行驶距离</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="{$salaryList.driver_mileage}" name="driver_mileage" class="layui-input" readonly="readonly" style="background:#CCCCCC">
+                    <input type="text" value="{$salaryList.driver_mileage}" name="driver_mileage" id="driver_mileage" class="layui-input" readonly="readonly" style="background:#CCCCCC">
                 </div>
 
             </div>
@@ -51,7 +51,7 @@
 
                 <label class="layui-form-label">行驶时间</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="{$salaryList.driverTime}" name="sign_mileage"  class="layui-input" readonly="readonly" style="background:#CCCCCC">
+                    <input type="text" value="{$salaryList.driverTime}" name="sign_mileage" id="sign_mileage" class="layui-input" readonly="readonly" style="background:#CCCCCC">
                 </div>
 
             </div>
@@ -87,17 +87,16 @@
 
                 <label class="layui-form-label">备注</label>
                 <div class="layui-input-inline">
-                    <input type="text" value="{$salaryList.remark}" name="remark"  class="layui-input">
+                    <input type="text" value="{$salaryList.remark}" name="remark"  id="remark" class="layui-input">
                 </div>
 
             </div>
             <div class="layui-form-item">
                 <div class="layui-input-block">
-                    <button class="layui-btn" lay-submit="" lay-filter="submit">保存</button>
-                    <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+                    <button class="layui-btn" lay-submit="" lay-filter="submit" id="save">保存</button>
                 </div>
             </div>
-            <input type="hidden" name="outcarId" value="{$salaryList.id}" />
+            <input type="hidden" name="outcarId" id="outcarId" value="{$salaryList.id}" />
         </form>
 
     </div>
@@ -111,6 +110,42 @@
             var other = $("#other_money")[0].value;
             var sum = Number(order) +Number(other);
             $("#sum_money").val(sum.toFixed(2));
+        });
+    });
+
+    var alertMessage = function (msg,icon,type,shift,time,shade) {
+        msg = msg || '提示信息缺失';
+        icon = icon || 0;
+        type = type || 0;
+        shift = shift || 3;
+        time = time || 1000;
+        shade = shade || 0.372;
+        var config = {icon: icon,type: type,shift: shift,time:time,shade:shade};
+        layui.use(['layer'],function () {
+            layer.msg(msg,config);
+        });
+    };
+
+    $(function(){
+        //保存编辑
+        $('#save').click(function(){
+            var other_money =  $("#other_money").val();
+            if(isNaN(other_money)){
+                alertMessage('费用请输入数字类型',5,'',6);
+                return false;
+            }
+            var remark =  $("#remark").val();
+            var sum_money =  $("#sum_money").val();
+            var outcarId = $('#outcarId').val();
+            $.post("{:url('detail')}",{other_money:other_money,sum_money:sum_money,remark:remark,outcarId:outcarId},function(data){
+                if(data.code==200){
+                    alertMessage(data.message,6,'',6);
+                    window.parent.location.href=data.data;
+                }else{
+                    alertMessage(data.message,5,'',6);
+                }
+            },"json");
+
         });
     });
 </script>

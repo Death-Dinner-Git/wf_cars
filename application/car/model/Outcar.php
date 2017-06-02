@@ -12,35 +12,6 @@ class OutCar extends Model{
 
 	protected $autoWriteTimestamp = 'datetime';//自动写入
 	protected $dateFormat = 'Y-m-d H:i:s';//自动格式输出
-	/**
-	* @出车列表
-	* @return array
-	**/
-	public function lists($pageNumber,$totalNumber,$where){
-		$lists = OutCar::where($where)->page($pageNumber,$totalNumber)->alias('a')
-            ->join('wf_take_car_order b','a.take_car_order_id = b.id')
-            ->join('wf_manager c','b.manager_id = c.id')
-            ->join('wf_building_base d','b.building_base_id = d.id')
-            ->join('wf_department e','b.department_id = e.id')
-            ->join('wf_driver f','b.driver_id = f.id')
-            ->join('wf_car g','b.car_id = g.id')
-            ->field('a.*,a.id as outid,b.*,b.id as orderid,c.*,c.id as managerid,c.real_name as manager_name,d.*,d.id as buildid,d.name as build_name,e.*,e.id as departid,e.name as department_name,f.*,f.id as driverid,f.real_name as driver_name,g.*')
-            ->order('a.create_time desc')->select();
-
-		foreach($lists as $key=>$value){
-			$value['order_status_cn'] = $this->orderStatus($value['order_status']);
-		}
-	
-		return $lists;
-	}
-	/**
-	* @数据总数
-	* @return array
-	**/
-	public function totalCount($where,$totalNumber){
-		$count = OutCar::where($where)->alias('a')->join('wf_take_car_order b','a.take_car_order_id = b.id')->join('wf_manager c','b.manager_id = c.id')->join('wf_building_base d','b.building_base_id = d.id')->join('wf_department e','b.department_id = e.id')->join('wf_driver f','b.driver_id = f.id')->join('wf_car g','b.car_id = g.id')->count();
-		return ceil(($count/$totalNumber));
-	}
 
 
 	/**
@@ -52,53 +23,42 @@ class OutCar extends Model{
 		return $detail;
 	}
 
-
 	/**
-	* @安排出车
+	* @安排出车(更新)
 	* @return array
 	**/
 	public function updateTakeOrderCar($id,$data){
-	 $result = Loader::model('TakeCarOrder')::where('id',$id)->update($data);
+	 $result = Loader::model('TakeCarOrder')::where('out_car_id',$id)->update($data);
 	 return $result;	
 	}
-
-
 	/**
-	* @订单状态转换
+	* @安排出车(插入)
 	* @return array
 	**/
-	public function orderStatus($status){
-		switch($status){
-			case 'over':
-			  return '订单完成';
-			  break;  
-			case 'cancel':
-			  return '取消';
-			  break;
-			case 'success':
-			  return '成功匹配';
-			  break;
-			case 'drivering':
-			  return '订单进行中';
-			  break;
-			default:
-			  return '未派车';
-		}
+	public function insertTakeOrderCar($data){
+	 $result = Loader::model('TakeCarOrder')::create($data);
+	 OutCar::where('id',$data['out_car_id'])->update(['take_car_order_id' =>$result->id]);
+	 return $result;
 	}
+
 	/**
-	* @订单类型转换
+	* @部门转换
 	* @return array
 	**/
-	public function carStatus($status){
-		switch($status){
-			case 'come':
-			  return '去程';
-			  break;  
-			case 'back':
-			  return '回程';
-			  break;
-		}
+	public function depTurn($manaid){
+		$department_id = Loader::model('Manager')::where('id',$manaid)->value('department_id');
+		$department_name = Loader::model('Department')::where('id',$department_id)->value('name');
+		return $department_name;
 	}
+	/**
+	* @楼盘转换
+	* @return array
+	**/
+	public function buildTurn($buildid){
+		$build_name = Loader::model('BuildingBase')::where('id',$buildid)->value('name');
+		return $build_name;
+	}
+
 	/**
 	* @附近车辆
 	* @return array
@@ -113,7 +73,7 @@ class OutCar extends Model{
 			//take_car_order
 			$carData[$key]['carToOrder'] = $this->_carToOrder($value['id']);
 			//管理员名字
-			$carData[$key]['real_name'] = Loader::model('Manager')->where('id',$carData[$key]['carToOrder']['manager_id'])->value('real_name');
+			$carData[$key]['real_name'] = Loader::model('Manager')::where('id',$carData[$key]['carToOrder']['manager_id'])->value('real_name');
 
 			//当前未派单的经度
 			$carData[$key]['out_lat'] = $location['start_lat'];
@@ -134,7 +94,6 @@ class OutCar extends Model{
 				unset($carData[$key]);
 			}
 		}
-		
 		return $carData;
 	}
 
@@ -173,9 +132,17 @@ class OutCar extends Model{
 		$detail['number_plate'] = Loader::model('Car')::where('id',$detail['car_id'])->value('number_plate');//车牌号
 		$detail['department_name'] = Loader::model('Department')::where('id',$detail['department_id'])->value('name');//所在部门
 		$detail['sale_name'] = Loader::model('manager')::where('id',$detail['manager_id'])->value('real_name');//销售顾问
-		//订单类型和状态
-		$detail['order_type'] = $this->carStatus($detail['order_type']);
-		$detail['order_status'] = $this->orderStatus($detail['order_status']);
+		//获取车辆行驶路径GPS数据
+		$sim = Loader::model('Car')::where('id',$detail['car_id'])->value('sim');//sim
+		if(is_null($sim)){
+			$detail['gps'] = '';
+		}else{
+			$detail['gps'] = Loader::model('Gps')::where('SIM',$sim)->field('lng,lat')->select();
+			foreach($detail['gps'] as $key => $value){
+				$road .= '"'.$value['lng'].",".$value['lat'].'",';
+			}
+			$detail['gps'] = $road;
+		}
 		return $detail;
 	}
 
