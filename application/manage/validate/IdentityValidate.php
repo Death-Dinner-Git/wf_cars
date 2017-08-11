@@ -42,7 +42,7 @@ class IdentityValidate extends Validate
         'update'  =>  ['email'],
         'save'  =>  [],
         'loginAjax'   =>  ['username'=> 'require|usernameExist:base_user,username'],
-        'login'  =>  ['username','password','__token__'],
+        'login'  =>  ['username','password'],
         'signUp'  =>  ['username','password'],
         'register'  =>  ['username','password','password_rep','__token__'],
     ];

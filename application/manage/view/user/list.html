@@ -54,6 +54,9 @@
 <table class="layui-table" lay-even="" lay-skin="row">
     <thead>
     <tr>
+        <th style="width: 13px;">
+            <input type="checkbox" lay-skin="primary" lay-filter="allChoose" title="全选">
+        </th>
         <th>序号</th>
         <th>登录名称</th>
         <th>真实名称</th>
@@ -65,6 +68,9 @@
     <tbody>
     {volist name="dataProvider" id="model" key="key" empty="<tr class='empty'><td colspan='5' style='text-align: center;'> 没有数据 </td> </tr>"}
     <tr data-key="{$model.id}">
+        <td>
+            <input type="checkbox" name="Table[item]" lay-skin="primary">
+        </td>
         <td style="width: 45px;text-align: center;">
             {$key+($indexOffset)}
         </td>

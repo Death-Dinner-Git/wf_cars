@@ -96,22 +96,10 @@ layui.config({
     navbar.render();
     //监听点击事件
     navbar.on('click(side)', function(data) {
-        // console.log(data.field);
         tab.tabAdd(data.field);
     });
     var _tabElement = $('#dinner-body .layui-tab-title');
-    if (_tabElement.length >= 1){
-        var _url = _tabElement.attr('data-url'),
-            _icon = _tabElement.attr('data-icon'),
-            _title = _tabElement.attr('data-title');
-        if(_url !== undefined){
-            tab.tabAdd({
-                href: _url,
-                icon: _icon || 'fa fa-circle-o',
-                title: _title || '控制面板'
-            });
-        }
-    }
+    addTab(_tabElement);
 
     // //模拟点击内容管理
     // $('.beg-layout-menu').find('a[data-module-id=1]').click();
@@ -126,11 +114,37 @@ layui.config({
     //     }
     // });
 
+    $(document).on('click','[lay-filter="url"]',function () {
+        addTab(this);
+    });
+
+    window.addTab = addTab;
+    window.layui = layui;
+
+    function addTab(ele) {
+        var $this = $(ele);
+        if(typeof $this === 'object'&& $this.length >= 1 && $this.data('url') !== undefined ) {
+            var _url = $this.data('url'),
+                _icon = $this.data('icon'),
+                _title = $this.data('title');
+            if (_title !== undefined ){
+                tab.tabAdd({
+                    href: _url,
+                    icon: _icon || 'fa fa-circle-o',
+                    title: _title
+                });
+            }else{
+                layer.msg('缺少请求标题');
+            }
+        }
+    }
 
     // dinner-side-menu向左折叠
-    $('#dinner-side-toggle').click(function() {
+    $('#dinner-sidebar-toggle').click(function() {
         var sideWidth = $('#dinner-side').width();
         var icon = $(this).find('i');
+        var logo = $('#dinner-side-logo');
+        var img = logo.find('img');
         if(sideWidth === 200) {
             $('#dinner-body').animate({
                 left: '0'
@@ -142,11 +156,27 @@ layui.config({
                 width: '0'
             });
             $(this).animate({
-                left: '15'
+                left: '0'
             });
-            $('#dinner-side-logo img').animate({
+
+            logo.animate({
                 width: '0'
             });
+
+            img.animate({
+                width: '0'
+            });
+            setTimeout(function () {
+                img.attr('src',img.attr('data-close'));
+
+                logo.animate({
+                    width: '200'
+                });
+
+                img.animate({
+                    width: '150'
+                });
+            },1000);
             icon.attr('class',icon.attr('data-close')).attr('title','展开侧栏');
         } else {
             $('#dinner-body').animate({
@@ -159,11 +189,25 @@ layui.config({
                 width: '200px'
             });
             $(this).animate({
-                left: '215'
+                left: '199'
             });
-            $('#dinner-side-logo img').animate({
-                width: '150'
+            logo.animate({
+                width: '0'
             });
+            img.animate({
+                width: '0'
+            });
+            logo.animate({
+                width: '200'
+            });
+            setTimeout(function () {
+
+                img.attr('src',img.attr('data-open'));
+
+                img.animate({
+                    width: '50'
+                });
+            },1000);
             icon.attr('class',icon.attr('data-open')).attr('title','隐藏侧栏');
         }
     });
@@ -214,7 +258,7 @@ layui.config({
             var docElm = document.documentElement;
             var status = $(this).attr('data-full');
             var icon = $(this).find('i');
-            if ( status == 'false' ){
+            if ( status === 'false' ){
                 fullScreen(docElm);
                 $(this).attr('data-full','true');
                 icon.attr('class',icon.attr('data-close')).attr('title','退出全屏');

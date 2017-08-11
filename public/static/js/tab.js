@@ -13,6 +13,7 @@ layui.define(['element','layer'], function(exports) {
 				closed: true, //是否包含删除按钮
 				autoRefresh: true,
 				contextMenu:false,
+                dblclickRefresh:true,
                 // maxSetting:{
 				// 	max:10,
 				// }
@@ -134,7 +135,7 @@ layui.define(['element','layer'], function(exports) {
 			element.tabAdd(ELEM.tabFilter, {
 				title: title,
 				content: content,
-				id:new Date().getTime()
+				id:globalTabIdIndex
 			});
 			//iframe 自适应
 			ELEM.contentBox.find('iframe[data-id=' + globalTabIdIndex + ']').each(function() {
@@ -150,6 +151,15 @@ layui.define(['element','layer'], function(exports) {
 					}
 				});
 			};
+
+            //点击双击刷新
+            if(_config.dblclickRefresh) {
+                //监听双击事件
+                ELEM.titleBox.find('li[lay-id="'+globalTabIdIndex+'"]').on('dblclick', function() {
+                    _config.elem.find('div.layui-tab-content > div').children('iframe[data-id="'+globalTabIdIndex+'"]')[0].contentWindow.location.reload();
+                });
+            }
+
 			//切换到当前打开的选项卡
 			element.tabChange(ELEM.tabFilter, that.getTabId(data.title));
 		} else {
@@ -159,6 +169,7 @@ layui.define(['element','layer'], function(exports) {
 				_config.elem.find('div.layui-tab-content > div').eq(tabIndex).children('iframe')[0].contentWindow.location.reload();
 			}
 		}
+
 		if(_config.contextMenu) {
 			element.on('tab(' + ELEM.tabFilter + ')', function(data) {
 				$(document).find('div.dinner-contextmenu').remove();
@@ -248,7 +259,6 @@ layui.define(['element','layer'], function(exports) {
 	};
 
 	Tab.prototype.on = function(events, callback) {
-
 	}
 
 	var tab = new Tab();

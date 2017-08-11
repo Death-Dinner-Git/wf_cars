@@ -2,12 +2,11 @@
     <div class="layui-side-scroll dinner-side-body" id="dinner-nav-side" lay-filter="side">
         <div id="dinner-nav-side-header">
             <div class="user-photo" id="user-profile" style="position: absolute;">
-                <a class="img" title="我的头像" >
-                    <img src="/static/images/default-user.png" class="user-images"></a>
+                <a data-url="/manage/user/view.html?iframe=true" class="img" lay-filter="url" data-title="个人信息">
+                    <img class="user-images" src="/static/images/default-user.png" title="个人信息" alt="我的头像" />
+                </a>
                 <p>你好！Dinner, 欢迎登录</p>
             </div>
         </div>
-        <!-- 左侧菜单 -->
-        <div><?php echo \app\common\components\MenuHelper::generateMenu(1) ?></div>
     </div>
 </div>
